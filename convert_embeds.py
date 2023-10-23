@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
+# from sklearn.decomposition import PCA
 
 
 
@@ -11,10 +11,10 @@ def avg_embeds(embeds):
 
     return avg_embed
 
-def do_pca(embeds):
-    pca = PCA(n_components=np.size(embeds, 0))
-    pcs = pca.fit_transform(embeds)
-    print(pcs.shape)
+# def do_pca(embeds):
+#     pca = PCA(n_components=np.size(embeds, 0))
+#     pcs = pca.fit_transform(embeds)
+#     print(pcs.shape)
 
 
 

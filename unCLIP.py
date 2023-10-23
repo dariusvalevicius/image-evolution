@@ -1,8 +1,8 @@
 
-import requests
+# import requests
 import torch
-from PIL import Image
-from io import BytesIO
+# from PIL import Image
+# from io import BytesIO
 import numpy as np
 
 from diffusers import StableUnCLIPImg2ImgPipeline
