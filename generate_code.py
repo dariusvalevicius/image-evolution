@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 def run_evolution(
     target,
     pop_size = 10,
-    vec_size = 768,
+    vec_size = 1024,
     max_iters = 300,
     top_n = 3,
     mutation_size = 1,
@@ -17,7 +17,7 @@ def run_evolution(
 
     # Initialize outputs
     err_out = np.zeros((1, max_iters)) # Minimum error per iteration
-    x_out = np.zeros((1, vec_size)) # Lowest-error vector
+    x_out = np.zeros((max_iters, vec_size)) # Lowest-error vector
     
     # Create initial pop    
     x = np.random.randn(pop_size, vec_size)
@@ -105,7 +105,7 @@ def run_evolution(
             print(f"Iteration {iter} - Minimum error: {np.min(err)}")
 
         err_out[0, iter] = np.min(err)
-        x_out[0, :] = x[np.argmin(err), :]
+        x_out[iter, :] = x[np.argmin(err), :]
 
     return err_out, x_out
 
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     # np.savetxt('final.txt', final_vec, delimiter=',')
 
     # Plot a simple line chart
-    plt.plot(np.arange(max_iters), err_out_tot[0, :], 'orange', label='0.005')
+    # plt.plot(np.arange(max_iters), err_out_tot[0, :], 'orange', label='0.005')
     # plt.plot(np.arange(max_iters), err_out_tot[1, :], 'green', label='0.01')
     # plt.plot(np.arange(max_iters), err_out_tot[2, :], 'blue', label='0.02')
     # plt.plot(np.arange(max_iters), err_out_tot[3, :], 'red', label='0.05')

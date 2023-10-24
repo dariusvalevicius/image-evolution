@@ -1,8 +1,0 @@
-torch
-numpy
-matplotlib
-diffusers
-transformers
-accelerate
-scipy
-safetensors
