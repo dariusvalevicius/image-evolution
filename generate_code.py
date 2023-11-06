@@ -49,9 +49,9 @@ def run_evolution(
         min_err = np.argsort(err)[:top_n]
 
         # If last iter, save vec
-        if iter == max_iters-1:
-            final_vec = x[min_err[0],:]
-            np.savetxt('final.txt', final_vec, delimiter=',')
+        # if iter == max_iters-1:
+        #     final_vec = x[min_err[0],:]
+        #     np.savetxt('final.txt', final_vec, delimiter=',')
 
         # Create next generation
         top_x = np.zeros((top_n, vec_size))

@@ -48,6 +48,12 @@ def avg_embeds(embeds):
 
     return avg_embed
 
+def get_extreme_features(embeds, sd_num=3):
+    mean = np.mean(embeds)
+    sd = np.std(embeds)
+    indices = np.where((embeds >= (mean + (sd_num * sd))) | (embeds <= mean - (sd_num * sd)))
+    return indices[0]
+
 if __name__ == "__main__":
 
     path = "test_images/snake.PNG"

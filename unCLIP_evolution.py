@@ -23,17 +23,17 @@ def generate_image(model_path, embedding, image_name):
     # pipe.enable_vae_slicing()
 
     # embedding = torch.randn(1, 768, dtype=torch.float16)
-    embedding = torch.from_numpy(embedding)
+    embedding = torch.tensor(np.reshape(embedding, (1,np.size(embedding))), dtype=torch.float16)
     print(embedding.size())
     embedding = embedding.to(device)
 
-    images = pipe(image_embeds=embedding, num_inference_steps=15).images
+    images = pipe(image_embeds=embedding, num_inference_steps=21).images
     images[0].save(image_name)
 
 if __name__ == "__main__":
 
     model_path = "../stable-diffusion-2-1-unclip-small"
-    embedding = torch.tensor(np.reshape(np.loadtxt("avg_embeds.txt", dtype="float16"), (1,768)))
+    embedding = np.loadtxt("final.txt")
     image_name = "snake_avg_embedding.png"
 
     generate_image(model_path, embedding, image_name)
