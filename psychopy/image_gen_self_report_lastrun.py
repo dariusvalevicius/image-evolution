@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2022.2.4),
-    on November 06, 2023, at 10:53
+    on November 07, 2023, at 14:27
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -42,9 +42,6 @@ model_path = "path_to_model"
 global diffusion_steps
 diffusion_steps = 21
 
-embeddings = np.zeros((8, 1024))
-parent_1 = np.zeros((1, 1024))
-parent_2 = np.zeros((1, 1024))
 
 global max_iters
 max_iters = 3
@@ -52,8 +49,14 @@ global mutation_rate
 mutation_rate = 0.05
 global mutation_size
 mutation_size = 1
+global vec_size
+vec_size = 768
 
-top_embeddings = np.zeros((max_iters, 1024))
+embeddings = np.zeros((8, vec_size))
+parent_1 = np.zeros((1, vec_size))
+parent_2 = np.zeros((1, vec_size))
+
+top_embeddings = np.zeros((max_iters, vec_size))
 all_ratings = np.zeros((1, max_iters))
 
 ## Classes
@@ -71,14 +74,14 @@ def generate_image(embedding, image_name):
     images[0].save(image_name)
     
 def generate_children(parent_1, parent_2):
-    embeddings = np.zeros((8, 1024))
-    parent_1 = parent_1.reshape((1,1024))
-    parent_2 = parent_2.reshape((1,1024))
+    embeddings = np.zeros((8, vec_size))
+    parent_1 = parent_1.reshape((1,vec_size))
+    parent_2 = parent_2.reshape((1,vec_size))
     
     # Generate recombinations
     for i in range(8):
-        child = np.zeros((1, 1024))
-        for j in range(1024):
+        child = np.zeros((1, vec_size))
+        for j in range(vec_size):
             choice = np.random.random()
             if choice <= 0.5:
                 child[0,j] = parent_1[0,j]
@@ -87,8 +90,8 @@ def generate_children(parent_1, parent_2):
         embeddings[i,:] = child    
         
     # Add mutations
-    y = np.random.uniform(-mutation_size, mutation_size, size=(8, 1024))
-    z = np.random.binomial(1, mutation_rate, size=(8, 1024))
+    y = np.random.uniform(-mutation_size, mutation_size, size=(8, vec_size))
+    z = np.random.binomial(1, mutation_rate, size=(8, vec_size))
     # Create mutation vec
     mutation = np.multiply(y, z)
     # Add to pop
@@ -136,7 +139,7 @@ filename = _thisDir + os.sep + u'data/%s_%s_%s' % (expInfo['participant'], expNa
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
     extraInfo=expInfo, runtimeInfo=None,
-    originPath='C:\\Users\\dariu\\Documents\\PhD\\image_gen\\psychopy\\image_gen_self_report_lastrun.py',
+    originPath='C:\\Users\\dariu\\Documents\\PhD\\image_gen\\image-evolution\\psychopy\\image_gen_self_report_lastrun.py',
     savePickle=True, saveWideText=True,
     dataFileName=filename)
 # save a log file for detail verbose info
@@ -251,7 +254,7 @@ for thisTrial in trials:
     
     ## Start with random embeddings
     if iteration == 0:
-        embeddings = np.random.randn(8, 1024)
+        embeddings = np.random.randn(8, vec_size)
     
     ## Generate images based off embeddings
     for i in range(8):
@@ -389,7 +392,7 @@ for thisTrial in trials:
     # Update parent_2 (parent 1 from last round)
     # (Or random vec if just starting)
     if iteration == 0:
-        parent_2 = np.random.randn(1, 1024)
+        parent_2 = np.random.randn(1, vec_size)
     else:
         parent_2 = parent_1
         
