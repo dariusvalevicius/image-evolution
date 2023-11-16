@@ -13,7 +13,7 @@ def generate_image(model_path, embedding, image_name):
     # device = torch.device('cpu')
     print('Using device:', device)
 
-    pipe = StableUnCLIPImg2ImgPipeline.from_pretrained(model_path, torch_dtype=torch.float16, variation="fp16")
+    pipe = StableUnCLIPImg2ImgPipeline.from_pretrained(model_path, torch_dtype=torch.float16)
     # pipe = StableUnCLIPImg2ImgPipeline.from_pretrained(
     #     "/home/vtd/scratch/StableDiffusion/unCLIP_model", torch_dtype=torch.float16, variation="fp16"
     # )
