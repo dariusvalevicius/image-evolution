@@ -6,18 +6,18 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
 
-def plot_pca(data):
+def plot_pca(data, pop_size):
     # Plot CMA on 2D PCA plot
 
     pca = PCA(n_components=2)
     principal_components = pca.fit_transform(data)
 
     # The transformed data contains the principal components
-    print("Original data shape:", data.shape)
-    print("Transformed data shape:", principal_components.shape)
+    # print("Original data shape:", data.shape)
+    # print("Transformed data shape:", principal_components.shape)
     # print("Principal Components:\n", principal_components)
 
-    group_index = np.arange(len(data)) // 10
+    group_index = np.arange(len(data)) // pop_size
 
     # Plot the scores on a scatter plot with different colors for each observation
     plt.scatter(
@@ -27,9 +27,6 @@ def plot_pca(data):
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
     plt.colorbar(label='Observation Index')
-
-    # Show the plot
-    plt.show()
 
     return None
 
@@ -42,7 +39,7 @@ if __name__ == "__main__":
 
     # Define parameters
 
-    pop_size = 16  # Make this a multiple of 4
+    pop_size = 12  # Make this a multiple of 4
     top_n = int(pop_size/4)
     mutation_rates = [0.01, 0.02, 0.05, 0.1]
     mutation_size = 0.3
@@ -64,6 +61,9 @@ if __name__ == "__main__":
     # Data to save
     best_x = np.zeros((max_iters, vec_size))
     best_fitness = np.zeros(max_iters)
+
+    mutation_rate_selected = np.zeros(pop_size)
+    all_rates = np.zeros(max_iters)
 
     # Loop
     for iter in range(max_iters):
@@ -90,11 +90,16 @@ if __name__ == "__main__":
 
         # Get top vectors
         idx = np.argsort(fitness)[::-1]
+        # idx = np.argsort(fitness)
         fitness_sorted = fitness[idx]
         x_sorted = x[idx, :]
 
         fitness_top = fitness_sorted[:top_n]
         x_top = x_sorted[:top_n, :]
+
+        # Which mutation rate was selected?
+        # print(f"Mutation rate selected: {mutation_rate_selected[idx[0]]}")
+        all_rates[iter] = mutation_rate_selected[idx[0]]
 
         # Update output vars
         best_x[iter, :] = x_top[0, :]
@@ -102,9 +107,9 @@ if __name__ == "__main__":
 
         # Every 5 generations: Save figure
         if iter % 5 == 0 or iter + 1 == max_iters:
-            print(f"Iteration: {iter+1}, Fitness: {fitness_top[0]}")
-            shutil.copy("generation/img_{idx[0]}.png",
-                        "saved_images/iter_{iter}.png")
+            print(f"Iteration: {iter}, Fitness: {fitness_top[0]}")
+            # shutil.copy("generation/img_{idx[0]}.png",
+            #             "saved_images/iter_{iter}.png")
 
         # Compute recombination probability weights
         weights = fitness_top / np.sum(fitness_top)
@@ -131,6 +136,8 @@ if __name__ == "__main__":
             z = np.random.binomial(1, mutation_rate, size=vec_size)
             mutations[j, :] = np.multiply(y, z)
 
+            mutation_rate_selected[j] = mutation_rate
+
         next_x = next_x + mutations
 
         # Update vec
@@ -139,9 +146,18 @@ if __name__ == "__main__":
     # End of loop
 
     # Plot results
-    plot_pca(best_x)
+    plot_pca(best_x, pop_size)
+    # plt.show()
+    plt.savefig("figures/pca.png")
 
     plt.plot(np.arange(max_iters), best_fitness, 'orange')
     plt.xlabel('Iteration')
     plt.ylabel('Score')
-    plt.show()
+    plt.savefig("figures/error.png")
+    # plt.show()
+
+    plt.plot(np.arange(max_iters), all_rates)
+    plt.xlabel('Iteration')
+    plt.ylabel('Mutation rate of top vector')
+    plt.savefig("figures/mutation_rates.png")
+    # plt.show()
