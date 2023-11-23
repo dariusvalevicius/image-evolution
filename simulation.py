@@ -108,8 +108,8 @@ if __name__ == "__main__":
         # Every 5 generations: Save figure
         if iter % 5 == 0 or iter + 1 == max_iters:
             print(f"Iteration: {iter}, Fitness: {fitness_top[0]}")
-            # shutil.copy("generation/img_{idx[0]}.png",
-            #             "saved_images/iter_{iter}.png")
+            shutil.copy("generation/img_{idx[0]}.png",
+                        "saved_images/iter_{iter}.png")
 
         # Compute recombination probability weights
         weights = fitness_top / np.sum(fitness_top)
