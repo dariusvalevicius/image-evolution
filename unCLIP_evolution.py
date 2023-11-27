@@ -29,11 +29,11 @@ def prep_model(model_path):
     return pipe
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    model_path = "../stable-diffusion-2-1-unclip-small"
-    embedding = np.loadtxt("final.txt")
-    image_name = "snake_avg_embedding.png"
+#     model_path = "../stable-diffusion-2-1-unclip-small"
+#     embedding = np.loadtxt("final.txt")
+#     image_name = "snake_avg_embedding.png"
 
-    pipe = prep_model(model_path)
-    generate_image(pipe, embedding, image_name)
+#     pipe = prep_model(model_path)
+#     generate_image(pipe, embedding, image_name)

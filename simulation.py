@@ -10,6 +10,15 @@ def plot_pca(data, pop_size):
     # Plot CMA on 2D PCA plot
 
     pca = PCA(n_components=2)
+
+    # Fit the data
+    pca.fit(data)
+
+    # Print the variance explained by the first two dimensions
+    explained_variance = pca.explained_variance_ratio_
+    print("Variance explained by the first dimension:", explained_variance[0])
+    print("Variance explained by the second dimension:", explained_variance[1])
+
     principal_components = pca.fit_transform(data)
 
     # The transformed data contains the principal components
@@ -17,11 +26,9 @@ def plot_pca(data, pop_size):
     # print("Transformed data shape:", principal_components.shape)
     # print("Principal Components:\n", principal_components)
 
-    group_index = np.arange(len(data)) // pop_size
-
     # Plot the scores on a scatter plot with different colors for each observation
     plt.scatter(
-        principal_components[:, 0], principal_components[:, 1], c=group_index, cmap='viridis')
+        principal_components[:, 0], principal_components[:, 1], c=np.arange(len(data)), cmap='viridis')
 
     # Add labels and a colorbar
     plt.xlabel('Principal Component 1')
@@ -34,8 +41,8 @@ def plot_pca(data, pop_size):
 if __name__ == "__main__":
 
     # Model paths
-    unclip_model_path = "../stable-diffusion-2-1-unclip-small"
-    vit_model_path = "../vit-base-patch16-224"
+    unclip_model_path = "stabilityai/stable-diffusion-2-1-unclip-small"
+    vit_model_path = "google/vit-base-patch16-224"
 
     # Define parameters
 
@@ -51,7 +58,8 @@ if __name__ == "__main__":
     # print(f"X: {x}:")
 
     # For testing: random target vector
-    target = np.random.randn(vec_size)
+    target = np.random.randn(vec_size).reshape(1, vec_size)
+    # target = np.reshape(np.loadtxt("embed.txt", dtype="float16"), (1, 768))
     # print(f"T: {target}")
 
     # Prepare models
@@ -84,13 +92,12 @@ if __name__ == "__main__":
                 vit_processor, vit_model, image_name)
 
             # For testing: euclidian distance metric
-            # fitness[j] = np.linalg.norm(target - x[j, :])
+            # fitness[j] = 1 / np.linalg.norm(target - x[j, :])
 
         # print(fitness)
 
         # Get top vectors
         idx = np.argsort(fitness)[::-1]
-        # idx = np.argsort(fitness)
         fitness_sorted = fitness[idx]
         x_sorted = x[idx, :]
 
@@ -112,7 +119,10 @@ if __name__ == "__main__":
                         "saved_images/iter_{iter}.png")
 
         # Compute recombination probability weights
-        weights = fitness_top / np.sum(fitness_top)
+        median = np.median(fitness)
+        fitness_relative = np.clip(fitness_top - median, 0, None)
+        weights = fitness_relative / np.sum(fitness_relative)
+        # print(weights)
 
         # Produce next generation
 
@@ -146,7 +156,7 @@ if __name__ == "__main__":
     # End of loop
 
     # Plot results
-    plot_pca(best_x, pop_size)
+    plot_pca(np.vstack((best_x, target)), pop_size)
     # plt.show()
     plt.savefig("figures/pca.png")
 
@@ -160,4 +170,14 @@ if __name__ == "__main__":
     plt.xlabel('Iteration')
     plt.ylabel('Mutation rate of top vector')
     plt.savefig("figures/mutation_rates.png")
+    # plt.show()
+
+    plt.scatter(target[0, :], best_x[-1, :])
+    # obtain m (slope) and b(intercept) of linear regression line
+    m, b = np.polyfit(target[0, :], best_x[-1, :], 1)
+    # add linear regression line to scatterplot
+    plt.plot(target[0, :], m*target[0, :]+b)
+    plt.xlabel('Target vector')
+    plt.ylabel('Last evolved vector')
+    plt.savefig("figures/correlation.png")
     # plt.show()

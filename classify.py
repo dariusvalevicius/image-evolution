@@ -1,7 +1,5 @@
 from transformers import ViTImageProcessor, ViTForImageClassification
 from PIL import Image
-import matplotlib.pyplot as plt
-import torch
 
 
 def return_score(processor, model, image_path):
@@ -32,9 +30,9 @@ def prep_model(path):
     return processor, model
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    processor, model = prep_model('../vit-base-patch16-224')
+#     processor, model = prep_model('../vit-base-patch16-224')
 
-    image_path = "test_images/snake.png"
-    score = return_score(processor, model, image_path)
+#     image_path = "test_images/snake.png"
+#     score = return_score(processor, model, image_path)

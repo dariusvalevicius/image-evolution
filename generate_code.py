@@ -2,6 +2,7 @@ import torch
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 
 def recombination(x, err, mutation_rate, mutation_size, top_n):
@@ -18,7 +19,7 @@ def recombination(x, err, mutation_rate, mutation_size, top_n):
         top_x[i, :] = x[min_err[i], :]
 
     next_x = np.zeros((pop_size, vec_size))
-    for i in range(pop_size-1):
+    for i in range(pop_size):
         parent_idx = np.random.choice(top_n, replace=False, size=2)
         parent_1 = top_x[parent_idx[0]]
         parent_2 = top_x[parent_idx[1]]
@@ -32,7 +33,7 @@ def recombination(x, err, mutation_rate, mutation_size, top_n):
                 child[0, j] = parent_2[j]
         next_x[i, :] = child
 
-    next_x[pop_size-1, :] = np.random.randn(1, vec_size)
+    # next_x[pop_size-1, :] = np.random.randn(1, vec_size)
 
     # Apply mutations
 
@@ -48,6 +49,37 @@ def recombination(x, err, mutation_rate, mutation_size, top_n):
     next_x = np.add(next_x, mutate)
 
     return next_x
+
+
+def plot_cma(x_out_tot):
+    # Plot CMA on 2D PCA plot
+
+    data = x_out_tot.reshape(
+        x_out_total.shape[0]*x_out_total.shape[1], x_out_total.shape[2])
+
+    pca = PCA(n_components=2)
+    principal_components = pca.fit_transform(data)
+
+    # The transformed data contains the principal components
+    print("Original data shape:", data.shape)
+    print("Transformed data shape:", principal_components.shape)
+    # print("Principal Components:\n", principal_components)
+
+    group_index = np.arange(len(data)) // 10
+
+    # Plot the scores on a scatter plot with different colors for each observation
+    plt.scatter(
+        principal_components[:, 0], principal_components[:, 1], c=group_index, cmap='viridis')
+
+    # Add labels and a colorbar
+    plt.xlabel('Principal Component 1')
+    plt.ylabel('Principal Component 2')
+    plt.colorbar(label='Observation Index')
+
+    # Show the plot
+    plt.show()
+
+    return None
 
 
 def cma(x, err, x_out, cov_mats, iter):
@@ -77,11 +109,13 @@ def cma(x, err, x_out, cov_mats, iter):
     mean = np.sum((top_x.T*weights_normalized).T, axis=0)
     # mean = np.mean(top_x, axis=0)
 
-    cov_mat = None
-    if np.sum(x_out) > 0:
-        cov_mat = np.cov(x_out.T)
-    else:
-        cov_mat = np.cov(x.T)
+    # cov_mat = None
+    # if np.sum(x_out) > 0:
+    #     cov_mat = np.cov(x_out.T)
+    # else:
+    #     cov_mat = np.cov(x.T)
+
+    cov_mat = np.eye(vec_size)
 
     # this_cov_mat = np.cov(x.T)
     # cov_mats[iter, :, :] = this_cov_mat
@@ -89,8 +123,10 @@ def cma(x, err, x_out, cov_mats, iter):
 
     # cov_mat = np.cov(x.T)
 
+    sigma = np.ones(vec_size) * 0.3
+
     next_x = np.random.multivariate_normal(
-        mean=mean, cov=cov_mat, size=pop_size)
+        mean=mean, cov=(sigma**2) * cov_mat, size=pop_size)
 
     # # Generate random vecs to add
     # mutation_size = 0.25
@@ -105,6 +141,37 @@ def cma(x, err, x_out, cov_mats, iter):
     # next_x = np.add(next_x, mutate)
 
     return next_x, cov_mats
+
+
+def custom(x, err, mutation_rate, mutation_size):
+
+    # Create next generation
+    pop_size = x.shape[0]
+    vec_size = x.shape[1]
+
+    top_n = int(pop_size/2)
+    min_err = np.argsort(err)[:top_n]
+
+    top_x = np.zeros((top_n, vec_size))
+    for i in range(top_n):
+        top_x[i, :] = x[min_err[i], :]
+
+    next_x = np.zeros((pop_size, vec_size))
+
+    weights = err[min_err][:top_n] / np.sum(err[min_err][:top_n])
+    mean = np.sum((top_x.T*weights).T, axis=0)
+
+    for i in range(pop_size):
+        next_x[i, :] = mean
+        y = np.random.randn(1, vec_size) * mutation_size
+        z = np.random.binomial(1, mutation_rate, size=(1, vec_size))
+        mutate = np.multiply(y, z)
+        next_x[i, :] = next_x[i, :] + mutate
+
+    # Add to pop
+    next_x = np.add(next_x, mutate)
+
+    return next_x
 
 
 def run_evolution(
@@ -122,10 +189,19 @@ def run_evolution(
     # Initialize outputs
     err_out = np.zeros((1, max_iters))  # Minimum error per iteration
     x_out = np.zeros((max_iters, vec_size))  # Lowest-error vector
+    x_out_total = np.zeros((max_iters, pop_size, vec_size))  # All x vector
 
+    # print(target)
+    # print(np.random.permutation(target)
     # Create initial pop
-    x = np.random.randn(pop_size, vec_size)
-    # print(x)
+    # x = np.random.randn(pop_size, vec_size)
+    x = np.zeros((pop_size, vec_size))
+    for i in range(pop_size):
+        x[i, :] = target
+
+    x = np.random.permutation(
+        x.reshape(pop_size*vec_size)).reshape((pop_size, vec_size))
+    print(x)
 
     # Stare vars for CMA
     cov_mats = np.zeros((max_iters, vec_size, vec_size))
@@ -148,17 +224,20 @@ def run_evolution(
             x = recombination(x, err, mutation_rate, mutation_size, top_n)
         elif mode == "cma":
             x, cov_mats = cma(x, err, x_out, cov_mats, iter)
+        elif mode == "custom":
+            x = custom(x, err, mutation_rate, mutation_size)
         else:
             raise Exception("ERROR: Mode is not valid!")
 
         # Print error values every 50 iters
-        if iter % 50 == 0:
+        if iter % 10 == 0:
             print(f"Iteration {iter} - Minimum error: {np.min(err)}")
 
         err_out[0, iter] = np.min(err)
         x_out[iter, :] = x[np.argmin(err), :]
+        x_out_total[iter, :, :] = x
 
-    return err_out, x_out
+    return err_out, x_out, x_out_total
 
 
 if __name__ == "__main__":
@@ -169,12 +248,12 @@ if __name__ == "__main__":
     # Set parameters
     pop_size = 10
     vec_size = 768
-    max_iters = 150
+    max_iters = 50
     top_n = 3
-    mutation_size = 1
-    error_power = 4  # multiple of 2
+    mutation_size = 0.3
+    error_power = 2  # multiple of 2
     # mutation_rates = [0.005, 0.01, 0.02, 0.05]
-    mutation_rates = [0.02]
+    mutation_rate = 0.02
 
     target = np.reshape(np.loadtxt("embed.txt", dtype="float16"), (1, 768))
     # target = np.random.randn(1, vec_size)
@@ -182,25 +261,39 @@ if __name__ == "__main__":
     # target = target + a
     # plt.hist(target[0,:], bins=20, color='blue', edgecolor='black')
 
-    err_out_tot = np.zeros((np.size(mutation_rates), max_iters))
-    x_out_tot = np.zeros((np.size(mutation_rates), vec_size))
+    # err_out_tot = np.zeros((np.size(mutation_rates), max_iters))
+    # x_out_tot = np.zeros((np.size(mutation_rates), vec_size))
 
     # for mut in range(np.size(mutation_rates)):
     #     mutation_rate = mutation_rates[mut]
 
-    err_out, x_out = run_evolution(
+    err_out, x_out, x_out_total = run_evolution(
         target=target,
-        mutation_rate=0.02,
-        mutation_size=1,
+        top_n=top_n,
+        pop_size=pop_size,
+        mutation_rate=mutation_rate,
+        mutation_size=mutation_size,
         max_iters=max_iters,
-        error_power=2,
+        error_power=error_power,
         vec_size=vec_size,
-        mode="cma")
+        mode="custom")
+
+    plot_cma(x_out_total)
 
     # err_out_tot[mut, :] = err_out
     # x_out_tot[mut, :] = x_out
 
     plt.plot(np.arange(max_iters), err_out[0, :], 'orange', label='0.02')
+    plt.show()
+
+    plt.scatter(target[0, :], x_out[max_iters-1, :])
+    # obtain m (slope) and b(intercept) of linear regression line
+    m, b = np.polyfit(target[0, :], x_out[max_iters-1, :], 1)
+
+    # add linear regression line to scatterplot
+    plt.plot(target[0, :], m*target[0, :]+b)
+    plt.xlim(-3, 3)
+    plt.ylim(-3, 3)
 
     # If last iter, save vec
     # final_vec = x_out_tot[3,:]
@@ -224,4 +317,12 @@ if __name__ == "__main__":
     # plt.scatter(target, x_out_tot[3, :])
 
     plt.legend()
+    plt.show()
+
+    cov = np.cov(x_out_total.reshape(max_iters*x_out_total.shape[1], vec_size))
+    plt.figure(figsize=(10, 8))
+    heatmap = plt.imshow(cov, cmap='coolwarm',
+                         interpolation='nearest')
+    plt.colorbar(heatmap, label='Covariance')
+    plt.title('Covariance Matrix Heatmap')
     plt.show()
