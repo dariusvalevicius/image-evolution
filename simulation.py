@@ -41,8 +41,8 @@ def plot_pca(data, pop_size):
 if __name__ == "__main__":
 
     # Model paths
-    unclip_model_path = "stabilityai/stable-diffusion-2-1-unclip-small"
-    vit_model_path = "google/vit-base-patch16-224"
+    unclip_model_path = "../stable-diffusion-2-1-unclip-small"
+    vit_model_path = "../vit-base-patch16-224"
 
     # Define parameters
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     top_n = int(pop_size/4)
     mutation_rates = [0.01, 0.02, 0.05, 0.1]
     mutation_size = 0.3
-    vec_size = 768
+    vec_size = 1024
     max_iters = 100
 
     # Start with random embeddings
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     # print(f"X: {x}:")
 
     # For testing: random target vector
-    target = np.random.randn(vec_size).reshape(1, vec_size)
+    # target = np.random.randn(vec_size).reshape(1, vec_size)
     # target = np.reshape(np.loadtxt("embed.txt", dtype="float16"), (1, 768))
     # print(f"T: {target}")
 
@@ -113,8 +113,8 @@ if __name__ == "__main__":
         best_fitness[iter] = fitness_top[0]
 
         # Every 5 generations: Save figure
-        if iter % 5 == 0 or iter + 1 == max_iters:
-            print(f"Iteration: {iter}, Fitness: {fitness_top[0]}")
+        if (iter + 1) % 5 == 0 or iter == 0:
+            print(f"Iteration: {iter + 1}, Fitness: {fitness_top[0]}")
             shutil.copy("generation/img_{idx[0]}.png",
                         "saved_images/iter_{iter}.png")
 
@@ -156,28 +156,33 @@ if __name__ == "__main__":
     # End of loop
 
     # Plot results
-    plot_pca(np.vstack((best_x, target)), pop_size)
-    # plt.show()
+    # plot_pca(np.vstack((best_x, target)), pop_size)
+    plot_pca(best_x, pop_size)
     plt.savefig("figures/pca.png")
+    # plt.show()
+    plt.clf()
 
     plt.plot(np.arange(max_iters), best_fitness, 'orange')
     plt.xlabel('Iteration')
     plt.ylabel('Score')
     plt.savefig("figures/error.png")
     # plt.show()
+    plt.clf()
 
     plt.plot(np.arange(max_iters), all_rates)
     plt.xlabel('Iteration')
     plt.ylabel('Mutation rate of top vector')
     plt.savefig("figures/mutation_rates.png")
     # plt.show()
+    plt.clf()
 
-    plt.scatter(target[0, :], best_x[-1, :])
-    # obtain m (slope) and b(intercept) of linear regression line
-    m, b = np.polyfit(target[0, :], best_x[-1, :], 1)
-    # add linear regression line to scatterplot
-    plt.plot(target[0, :], m*target[0, :]+b)
-    plt.xlabel('Target vector')
-    plt.ylabel('Last evolved vector')
-    plt.savefig("figures/correlation.png")
-    # plt.show()
+    # plt.scatter(target[0, :], best_x[-1, :])
+    # # obtain m (slope) and b(intercept) of linear regression line
+    # m, b = np.polyfit(target[0, :], best_x[-1, :], 1)
+    # # add linear regression line to scatterplot
+    # plt.plot(target[0, :], m*target[0, :]+b)
+    # plt.xlabel('Target vector')
+    # plt.ylabel('Last evolved vector')
+    # plt.savefig("figures/correlation.png")
+    # # plt.show()
+    # plt.clf()
