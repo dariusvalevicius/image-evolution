@@ -60,26 +60,26 @@ def get_extreme_features(embeds, sd_num=3):
 
 if __name__ == "__main__":
 
-    path = "test_images/snake.PNG"
+    # path = "test_images/snake.PNG"
 
-    # glob_str = "test_images/snakes/*.png"
+    glob_str = "../test_images/all_images/*.png"
 
-    # image_paths = glob.glob(glob_str)
-    # x = np.zeros((len(image_paths), 768))
+    image_paths = glob.glob(glob_str)
+    x = np.zeros((len(image_paths), 768))
 
     model_path = "../stable-diffusion-2-1-unclip-small/image_encoder"
     processor_path = "../stable-diffusion-2-1-unclip-small/feature_extractor"
     model, processor = prep_models(
         model_path=model_path, processor_path=processor_path)
 
-    # for i in range(len(image_paths)):
-    #     image_embeddings = get_embed(image_paths[i], model, processor)
-    #     x[i,:] = image_embeddings
+    for i in range(len(image_paths)):
+        image_embeddings = get_embed(image_paths[i], model, processor)
+        x[i, :] = image_embeddings
 
-    # np.savetxt('embeds_all.txt', x, delimiter=',')
+    np.savetxt('all_embeddings.txt', x, delimiter=',')
 
-    x = get_embed(path, model, processor)
-    np.savetxt('embed.txt', x, delimiter=',')
+    # x = get_embed(path, model, processor)
+    # np.savetxt('embed.txt', x, delimiter=',')
 
     # # Create a histogram
     # plt.hist(image_embeddings, bins=20, color='blue', edgecolor='black')
