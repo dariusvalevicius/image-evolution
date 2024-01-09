@@ -46,21 +46,27 @@ if __name__ == "__main__":
 
     # Define parameters
 
-    pop_size = 8  # Make this a multiple of 4
-    top_n = int(pop_size/4)
-    mutation_rates = [0.05]
-    mutation_size = 1
+    pop_size = 12  # Make this a multiple of 4
+    top_n = int(pop_size/2)
+    mutation_size = 0.3
     vec_size = 80
     embedding_size = 768
-    max_iters = 10
+    max_iters = 15
     imagenet_index = 2
+    diffusion_steps = 15
+
+    # Load PCA and covariance matrix
+    pca = pk.load(open("pca.pkl",'rb')) 
+    umap = pk.load(open("umap.pkl",'rb'))
+    cov = np.loadtxt("covariance_matrix.txt")
 
     # Start with random embeddings
-    x = np.random.randn(pop_size, vec_size)
+    # x = np.random.randn(pop_size, vec_size)
+    x = np.random.multivariate_normal(np.zeros(vec_size), cov, size=pop_size)
     # print(f"X: {x}:")
 
     # For testing: random target vector
-    # target = np.random.randn(vec_size).reshape(1, vec_size)
+    target = np.random.randn(vec_size).reshape(1, vec_size)
     # target = np.reshape(np.loadtxt("embed.txt", dtype="float16"), (1, 768))
     # print(f"T: {target}")
 
@@ -68,12 +74,13 @@ if __name__ == "__main__":
     pipe = unCLIP_evolution.prep_model(unclip_model_path)
     vit_processor, vit_model = classify.prep_model(vit_model_path)
 
-    # Load PCA
-    pca = pk.load(open("pca.pkl",'rb')) 
-
     # Data to save
+    all_x = np.zeros((max_iters, pop_size, vec_size))
     best_x = np.zeros((max_iters, vec_size))
     best_fitness = np.zeros(max_iters)
+
+    means = np.zeros((max_iters, vec_size))
+    sigmas = np.zeros(max_iters)
 
     mutation_rate_selected = np.zeros(pop_size)
     all_rates = np.zeros(max_iters)
@@ -95,7 +102,7 @@ if __name__ == "__main__":
             embedding = pca.inverse_transform(pcs)
 
             unCLIP_evolution.generate_image(
-                pipe, embedding, image_name)
+                pipe, embedding, image_name, diffusion_steps)
 
             # Evaluate the image
             fitness[j] = classify.return_score(
@@ -114,16 +121,12 @@ if __name__ == "__main__":
         fitness_top = fitness_sorted[:top_n]
         x_top = x_sorted[:top_n, :]
 
-        # Which mutation rate was selected?
-        # print(f"Mutation rate selected: {mutation_rate_selected[idx[0]]}")
-        all_rates[iter] = mutation_rate_selected[idx[0]]
-
         # Update output vars
         best_x[iter, :] = x_top[0, :]
         best_fitness[iter] = fitness_top[0]
 
         # Every 5 generations: Save figure
-        print(f"Iteration: {iter + 1}, Fitness: {fitness_top[0]}")
+        print(f"Iteration: {iter + 1}, Fitness: {fitness_top[0]}, Sigma: {mutation_size}")
         shutil.copy(f"generation/img_{idx[0]}.png",
                         f"saved_images/iter_{iter}.png")
 
@@ -135,34 +138,73 @@ if __name__ == "__main__":
 
         # Produce next generation
 
-        next_x = np.zeros(x.shape)
-        for j in range(pop_size):
-            for k in range(vec_size):
-                # Random number
-                rand = np.random.uniform()
-                # Select gene base on roll
-                for l in range(top_n):
-                    if rand <= np.sum(weights[:l+1]):
-                        next_x[j, k] = x_top[l, k]
-                        # print(f"Choosing: {l}")
-                        break
+        # next_x = np.zeros(x.shape)
 
-        # Add mutations
-        mutations = np.zeros(x.shape)
-        for j in range(pop_size):
-            mutation_rate = mutation_rates[np.random.randint(0, len(mutation_rates))]
-            y = np.random.randn(vec_size) * mutation_size
-            z = np.random.binomial(1, mutation_rate, size=vec_size)
-            mutations[j, :] = np.multiply(y, z)
+        ## CMA test
 
-            mutation_rate_selected[j] = mutation_rate
+        # mean = np.sum(x, axis=0)
+        # # print(mean.shape)
 
-        nonzero_idx = np.nonzero(mutations)
+        # x_top_unique = x_top - mean
+        # # print(x_top_unique.shape)
 
-        next_x[nonzero_idx] = mutations[nonzero_idx]
+        # x_top_weighted = (x_top_unique.T * weights).T
+        # mean = mean + np.sum(x_top_weighted, axis=0)
+
+        mean = np.sum((x_top.T * weights).T, axis=0)
+        next_x = np.random.multivariate_normal(mean, mutation_size * np.identity(vec_size), size=pop_size)
+        next_x = np.random.multivariate_normal(mean, mutation_size * cov, size=pop_size)
+
+
+        # if iter == (max_iters - 1):
+        #     image_name = f"generation/img_final.png"
+
+        #     pcs = mean
+        #     # Convert pca space to CLIP space
+        #     embedding = pca.inverse_transform(pcs)
+
+        #     unCLIP_evolution.generate_image(
+        #         pipe, embedding, image_name)
+
+
+        # for j in range(pop_size):
+        #     for k in range(vec_size):
+        #         # Random number
+        #         rand = np.random.uniform()
+        #         # Select gene base on roll
+        #         for l in range(top_n):
+        #             if rand <= np.sum(weights[:l+1]):
+        #                 next_x[j, k] = x_top[l, k]
+        #                 # print(f"Choosing: {l}")
+        #                 break
+
+        # # Add mutations
+        # mutations = np.zeros(x.shape)
+        # for j in range(pop_size):
+        #     mutation_rate = mutation_rates[np.random.randint(0, len(mutation_rates))]
+        #     y = np.random.randn(vec_size) * mutation_size
+        #     z = np.random.binomial(1, mutation_rate, size=vec_size)
+        #     mutations[j, :] = np.multiply(y, z)
+
+        #     mutation_rate_selected[j] = mutation_rate
+
+        # nonzero_idx = np.nonzero(mutations)
+
+        # next_x[nonzero_idx] = mutations[nonzero_idx]
 
         # Update vec
+        all_x[iter,:,:] = x
         x = next_x
+
+        # Update sigma
+        sigmas[iter] = mutation_size
+        means[iter] = mean
+        if iter > 1:
+            path_2 = means[iter,:] - means[iter-1,:]
+            path_1 = means[iter-1,:] - means[iter-2,:]
+            cosine = np.dot(path_1, path_2)/(np.linalg.norm(path_1)*np.linalg.norm(path_2))
+
+            mutation_size = mutation_size * (1 + cosine/2)
 
     # End of loop
 
@@ -170,21 +212,32 @@ if __name__ == "__main__":
     # plot_pca(np.vstack((best_x, target)), pop_size)
     plot_pca(best_x)
     plt.savefig("figures/pca.png")
-    # plt.show()
+    plt.show()
     plt.clf()
+
+    # Fit the UMAP model to your data
+    # umap_result = umap.transform(all_x.reshape((max_iters*pop_size, vec_size)))
+    umap_result = umap.transform(best_x)
+
+    # Plot the UMAP result
+    plt.scatter(umap_result[:, 0], umap_result[:, 1], c=np.arange(len(umap_result)))
+    plt.title('UMAP Projection')
+    plt.colorbar()
+    plt.savefig("figures/umap.png")
+    plt.show()
 
     plt.plot(np.arange(max_iters), best_fitness, 'orange')
     plt.xlabel('Iteration')
     plt.ylabel('Score')
     plt.savefig("figures/error.png")
-    # plt.show()
+    plt.show()
     plt.clf()
 
-    plt.plot(np.arange(max_iters), all_rates)
+    plt.plot(np.arange(max_iters), sigmas)
     plt.xlabel('Iteration')
-    plt.ylabel('Mutation rate of top vector')
+    plt.ylabel('Mutation rate')
     plt.savefig("figures/mutation_rates.png")
-    # plt.show()
+    plt.show()
     plt.clf()
 
     # plt.scatter(target[0, :], best_x[-1, :])

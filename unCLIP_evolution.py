@@ -3,28 +3,28 @@ import numpy as np
 from diffusers import StableUnCLIPImg2ImgPipeline
 
 
-def generate_image(pipe, embedding, image_name):
-    # setting device on GPU if available, else CPU
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    # device = torch.device('cpu')
-    print('Using device:', device)
+def generate_image(pipe, embedding, image_name, diffusion_steps=21):
+    # # setting device on GPU if available, else CPU
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # # device = torch.device('cpu')
+    # print('Using device:', device)
 
-    pipe = pipe.to(device)
+    # pipe = pipe.to(device)
     # pipe.enable_model_cpu_offload()
     # pipe.enable_vae_slicing()
 
     embedding = torch.tensor(np.reshape(
         embedding, (1, np.size(embedding))), dtype=torch.float16)
     # print(embedding.size())
-    embedding = embedding.to(device)
+    embedding = embedding.to('cuda')
 
-    images = pipe(image_embeds=embedding, num_inference_steps=21).images
+    images = pipe(image_embeds=embedding, num_inference_steps=diffusion_steps).images
     images[0].save(image_name)
 
 
 def prep_model(model_path):
     pipe = StableUnCLIPImg2ImgPipeline.from_pretrained(
-        model_path, torch_dtype=torch.float16)
+        model_path, torch_dtype=torch.float16).to('cuda')
 
     return pipe
 

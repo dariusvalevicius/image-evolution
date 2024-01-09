@@ -11,7 +11,7 @@ def prep_models(model_path, processor_path):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print('Using device:', device)
 
-    model = CLIPVisionModelWithProjection.from_pretrained(model_path)
+    model = CLIPVisionModelWithProjection.from_pretrained(model_path).to(device)
     processor = CLIPImageProcessor.from_pretrained(processor_path)
     # model = CLIPVisionModelWithProjection.from_pretrained("/home/vtd/scratch/StableDiffusion/CLIPVision")
     # processor = CLIPImageProcessor.from_pretrained("/home/vtd/scratch/StableDiffusion/Processor")
@@ -23,11 +23,14 @@ def get_embed(path, model, processor):
 
     image = Image.open(path)
     inputs = processor(text=None, images=image, return_tensors="pt")
+    # print(type(inputs['pixel_values']))
 
-    outputs = model(**inputs)
+    pixel_values = inputs['pixel_values'].to('cuda')
+
+    outputs = model(pixel_values)
 
     image_features = outputs.image_embeds
-    image_embeddings = image_features.detach().numpy()[0, :]
+    image_embeddings = torch.Tensor.cpu(image_features).detach().numpy()[0, :]
     print(image_features.size())
 
     return image_embeddings
@@ -62,7 +65,9 @@ if __name__ == "__main__":
 
     # path = "test_images/snake.PNG"
 
-    glob_str = "../test_images/all_images/*.png"
+    # glob_str = "../animal-images/*.png"
+    glob_str = "../imagenet_animals/*.JPEG"
+
 
     image_paths = glob.glob(glob_str)
     x = np.zeros((len(image_paths), 768))
@@ -72,11 +77,12 @@ if __name__ == "__main__":
     model, processor = prep_models(
         model_path=model_path, processor_path=processor_path)
 
-    for i in range(len(image_paths)):
-        image_embeddings = get_embed(image_paths[i], model, processor)
-        x[i, :] = image_embeddings
+    # for i in range(len(image_paths)):
+    #     image_embeddings = get_embed(image_paths[i], model, processor)
+    #     x[i, :] = image_embeddings
+    #     print(f"{i}/{len(image_paths)}")
 
-    np.savetxt('all_embeddings.txt', x, delimiter=',')
+    # np.savetxt('all_embeddings.txt', x, delimiter=',')
 
     # x = get_embed(path, model, processor)
     # np.savetxt('embed.txt', x, delimiter=',')
@@ -91,3 +97,10 @@ if __name__ == "__main__":
 
     # # Show the plot
     # plt.show()
+
+    for i in range(len(image_paths)):
+        image_embeddings = get_embed(image_paths[i], model, processor)
+        x[i, :] = image_embeddings
+        print(f"{i}/{len(image_paths)}")
+
+    np.savetxt('imagenet_embeddings.txt', x, delimiter=',')
