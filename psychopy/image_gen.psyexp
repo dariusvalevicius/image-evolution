@@ -8,9 +8,9 @@
     <Param val="u'data/%s_%s_%s' % (expInfo['participant'], expName, expInfo['date'])" valType="code" updates="None" name="Data filename"/>
     <Param val="True" valType="bool" updates="None" name="Enable Escape"/>
     <Param val="" valType="str" updates="None" name="End Message"/>
-    <Param val="{'participant': 'f&quot;{randint(0, 999999):06.0f}&quot;', 'session': '001', 'dev_mode': '1', 'max_iters': '15', 'pop_size': '8'}" valType="code" updates="None" name="Experiment info"/>
+    <Param val="{'participant': 'f&quot;{randint(0, 999999):06.0f}&quot;', 'dev_mode': '1', 'max_iters': '15', 'pop_size': '8', 'scr_attached': '1', 'scr_mode': '1'}" valType="code" updates="None" name="Experiment info"/>
     <Param val="True" valType="bool" updates="None" name="Force stereo"/>
-    <Param val="False" valType="bool" updates="None" name="Full-screen window"/>
+    <Param val="True" valType="bool" updates="None" name="Full-screen window"/>
     <Param val="" valType="str" updates="None" name="HTML path"/>
     <Param val="" valType="str" updates="None" name="Incomplete URL"/>
     <Param val="testMonitor" valType="str" updates="None" name="Monitor"/>
@@ -43,7 +43,7 @@
     <Param val="False" valType="bool" updates="None" name="elSimMode"/>
     <Param val="RIGHT_EYE" valType="str" updates="None" name="elTrackEyes"/>
     <Param val="PUPIL_CR_TRACKING" valType="str" updates="None" name="elTrackingMode"/>
-    <Param val="image_gen_cma" valType="str" updates="None" name="expName"/>
+    <Param val="image_gen" valType="str" updates="None" name="expName"/>
     <Param val="on Sync" valType="str" updates="None" name="exportHTML"/>
     <Param val="None" valType="str" updates="None" name="eyetracker"/>
     <Param val="127.0.0.1" valType="str" updates="None" name="gpAddress"/>
@@ -122,7 +122,7 @@
         <Param val="" valType="num" updates="constant" name="opacity"/>
         <Param val="0" valType="num" updates="constant" name="ori"/>
         <Param val="(0, 0)" valType="list" updates="constant" name="pos"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="False" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="(0.75, 0.75)" valType="list" updates="constant" name="size"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
@@ -133,6 +133,31 @@
         <Param val="128" valType="num" updates="constant" name="texture resolution"/>
         <Param val="from exp settings" valType="str" updates="None" name="units"/>
       </ImageComponent>
+      <TextComponent name="text_4" plugin="None">
+        <Param val="black" valType="color" updates="constant" name="color"/>
+        <Param val="rgb" valType="str" updates="constant" name="colorSpace"/>
+        <Param val="1" valType="num" updates="constant" name="contrast"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="None" valType="str" updates="constant" name="flip"/>
+        <Param val="Open Sans" valType="str" updates="constant" name="font"/>
+        <Param val="LTR" valType="str" updates="None" name="languageStyle"/>
+        <Param val="0.05" valType="num" updates="constant" name="letterHeight"/>
+        <Param val="text_4" valType="code" updates="None" name="name"/>
+        <Param val="" valType="num" updates="constant" name="opacity"/>
+        <Param val="0" valType="num" updates="constant" name="ori"/>
+        <Param val="(0, 0)" valType="list" updates="constant" name="pos"/>
+        <Param val="False" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="3.0" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="1.0" valType="code" updates="constant" name="stopVal"/>
+        <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
+        <Param val="+" valType="str" updates="constant" name="text"/>
+        <Param val="from exp settings" valType="str" updates="None" name="units"/>
+        <Param val="" valType="num" updates="constant" name="wrapWidth"/>
+      </TextComponent>
     </Routine>
     <Routine name="washout">
       <RoutineSettingsComponent name="washout" plugin="None">
@@ -164,12 +189,12 @@
         <Param val="" valType="num" updates="constant" name="opacity"/>
         <Param val="0" valType="num" updates="constant" name="ori"/>
         <Param val="(0, 0)" valType="list" updates="constant" name="pos"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="False" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
         <Param val="0.0" valType="code" updates="None" name="startVal"/>
         <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="0.25" valType="code" updates="constant" name="stopVal"/>
+        <Param val="1.0" valType="code" updates="constant" name="stopVal"/>
         <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
         <Param val="+" valType="str" updates="constant" name="text"/>
         <Param val="from exp settings" valType="str" updates="None" name="units"/>
@@ -206,31 +231,31 @@
         <Param val="" valType="num" updates="constant" name="opacity"/>
         <Param val="0" valType="num" updates="constant" name="ori"/>
         <Param val="(0, 0)" valType="list" updates="constant" name="pos"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="False" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
         <Param val="0.0" valType="code" updates="None" name="startVal"/>
         <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="0.5" valType="code" updates="constant" name="stopVal"/>
+        <Param val="" valType="code" updates="constant" name="stopVal"/>
         <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
-        <Param val="Generating images..." valType="str" updates="constant" name="text"/>
+        <Param val="+" valType="str" updates="constant" name="text"/>
         <Param val="from exp settings" valType="str" updates="None" name="units"/>
         <Param val="" valType="num" updates="constant" name="wrapWidth"/>
       </TextComponent>
       <CodeComponent name="generate_images" plugin="None">
-        <Param val="#### Start of experiment&amp;#10;&amp;#10;## Import packages&amp;#10;import torch&amp;#10;import numpy as np&amp;#10;from diffusers import StableUnCLIPImg2ImgPipeline&amp;#10;from sklearn.decomposition import PCA&amp;#10;import pickle as pk&amp;#10;import os, shutil&amp;#10;&amp;#10;## Classes&amp;#10;class Image(visual.ImageStim):&amp;#10;    # Embedding property&amp;#10;    embedding = None&amp;#10;&amp;#10;## Functions&amp;#10;def generate_image(embedding, image_name):&amp;#10;    # Ensure correct size and datatype&amp;#10;    embedding = torch.tensor(np.reshape(embedding, (1,np.size(embedding))), dtype=torch.float16)&amp;#10;    embedding = embedding.to(device)&amp;#10;    # Generate and save image&amp;#10;    images = pipe(image_embeds=embedding, num_inference_steps=diffusion_steps).images&amp;#10;    images[0].save(image_name)&amp;#10;    &amp;#10;def new_generation(fitness, x, iteration):&amp;#10;    top_n = int(pop_size/2)&amp;#10;    &amp;#10;    # Get top vectors&amp;#10;    idx = np.argsort(fitness)[::-1]&amp;#10;    fitness_sorted = fitness[idx]&amp;#10;    x_sorted = x[idx, :]&amp;#10;&amp;#10;    fitness_top = fitness_sorted[:top_n]&amp;#10;    x_top = x_sorted[:top_n, :]&amp;#10;&amp;#10;    # Compute recombination probability weights&amp;#10;    median = np.median(fitness)&amp;#10;    fitness_relative = np.clip(fitness_top - median, 0, None)&amp;#10;    weights = fitness_relative / np.sum(fitness_relative)&amp;#10;    &amp;#10;    mean = np.sum((x_top.T * weights).T, axis=0)&amp;#10;    next_x = np.random.multivariate_normal(mean, mutation_size * np.identity(vec_size), size=pop_size)&amp;#10;    next_x = np.random.multivariate_normal(mean, mutation_size * cov, size=pop_size)&amp;#10;    &amp;#10;    return next_x" valType="extendedCode" updates="constant" name="Before Experiment"/>
+        <Param val="#### Start of experiment&amp;#10;&amp;#10;## Import packages&amp;#10;import torch&amp;#10;import numpy as np&amp;#10;from diffusers import StableUnCLIPImg2ImgPipeline&amp;#10;from sklearn.decomposition import PCA&amp;#10;import pickle as pk&amp;#10;import os, shutil&amp;#10;from datetime import datetime, timedelta&amp;#10;import pandas as pd&amp;#10;&amp;#10;## Classes&amp;#10;class Image(visual.ImageStim):&amp;#10;    # Embedding property&amp;#10;    embedding = None&amp;#10;&amp;#10;## Functions&amp;#10;def generate_image(embedding, image_name):&amp;#10;    # Ensure correct size and datatype&amp;#10;    embedding = torch.tensor(np.reshape(embedding, (1,np.size(embedding))), dtype=torch.float16)&amp;#10;    embedding = embedding.to(device)&amp;#10;    # Generate and save image&amp;#10;    images = pipe(image_embeds=embedding, num_inference_steps=diffusion_steps).images&amp;#10;    images[0].save(image_name)&amp;#10;    &amp;#10;def new_generation(fitness, x, iteration):&amp;#10;    top_n = int(pop_size/2)&amp;#10;    &amp;#10;    # Get top vectors&amp;#10;    idx = np.argsort(fitness)[::-1]&amp;#10;    fitness_sorted = fitness[idx]&amp;#10;    x_sorted = x[idx, :]&amp;#10;&amp;#10;    fitness_top = fitness_sorted[:top_n]&amp;#10;    x_top = x_sorted[:top_n, :]&amp;#10;&amp;#10;    # Compute recombination probability weights&amp;#10;    median = np.median(fitness)&amp;#10;    fitness_relative = np.clip(fitness_top - median, 0, None)&amp;#10;    weights = np.ones(np.size(fitness_relative)) / pop_size&amp;#10;    if np.sum(fitness_relative) &gt; 0:&amp;#10;        weights = fitness_relative / np.sum(fitness_relative)&amp;#10;    &amp;#10;    mean = np.sum((x_top.T * weights).T, axis=0)&amp;#10;    next_x = np.random.multivariate_normal(mean, mutation_size * np.identity(vec_size), size=pop_size)&amp;#10;    next_x = np.random.multivariate_normal(mean, mutation_size * cov, size=pop_size)&amp;#10;    &amp;#10;    return next_x" valType="extendedCode" updates="constant" name="Before Experiment"/>
         <Param val="" valType="extendedCode" updates="constant" name="Before JS Experiment"/>
-        <Param val="## Set variables&amp;#10;global model_path&amp;#10;model_path = &quot;C:/Users/dariu/Documents/PhD/ImageGeneration/stable-diffusion-2-1-unclip-small&quot;&amp;#10;global diffusion_steps&amp;#10;diffusion_steps = 21&amp;#10;&amp;#10;global dev_mode&amp;#10;dev_mode = int(expInfo['dev_mode'])&amp;#10;&amp;#10;global max_iters&amp;#10;max_iters = int(expInfo['max_iters'])&amp;#10;global pop_size&amp;#10;pop_size = int(expInfo['pop_size'])&amp;#10;global mutation_size&amp;#10;mutation_size = 0.3&amp;#10;global vec_size&amp;#10;vec_size = 80&amp;#10;global embedding_size&amp;#10;embedding_size = 768&amp;#10;&amp;#10;# Load PCA and covariance matrix&amp;#10;global pca&amp;#10;pca = pk.load(open(&quot;pca.pkl&quot;,'rb')) &amp;#10;global cov&amp;#10;cov = np.loadtxt(&quot;covariance_matrix.txt&quot;)&amp;#10;&amp;#10;this_gen_embeddings = np.zeros((pop_size, vec_size))&amp;#10;parent_1 = np.zeros((1, vec_size))&amp;#10;parent_2 = np.zeros((1, vec_size))&amp;#10;&amp;#10;all_embeddings = np.zeros((max_iters, pop_size, vec_size))&amp;#10;all_ratings = np.zeros((max_iters, pop_size))&amp;#10;&amp;#10;## Set unCLIP device&amp;#10;if not dev_mode:&amp;#10;    global device&amp;#10;    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')&amp;#10;    print('Using device:', device)&amp;#10;&amp;#10;    ## Load model&amp;#10;    global pipe&amp;#10;    pipe = StableUnCLIPImg2ImgPipeline.from_pretrained(model_path, torch_dtype=torch.float16, variation=&quot;fp16&quot;)&amp;#10;    pipe = pipe.to(device)&amp;#10;    # pipe.enable_model_cpu_offload()&amp;#10;    # pipe.enable_vae_slicing()" valType="extendedCode" updates="constant" name="Begin Experiment"/>
+        <Param val="## Set variables&amp;#10;global model_path&amp;#10;model_path = &quot;C:/Users/dariu/Documents/PhD/ImageGeneration/stable-diffusion-2-1-unclip-small&quot;&amp;#10;global diffusion_steps&amp;#10;diffusion_steps = 12&amp;#10;&amp;#10;global participant&amp;#10;participant = int(expInfo['participant']&amp;#10;if not os.path.exists(f&quot;data/{participant}&quot;):&amp;#10;    os.mkdir(f&quot;data/{participant}&quot;)&amp;#10;&amp;#10;global dev_mode&amp;#10;dev_mode = int(expInfo['dev_mode'])&amp;#10;global scr_attached&amp;#10;scr_attached = int(expInfo['scr_attached'])&amp;#10;global scr_mode&amp;#10;scr_mode = int(expInfo['scr_mode'])&amp;#10;&amp;#10;global max_iters&amp;#10;max_iters = int(expInfo['max_iters'])&amp;#10;global pop_size&amp;#10;pop_size = int(expInfo['pop_size'])&amp;#10;global mutation_size&amp;#10;mutation_size = 0.3&amp;#10;global vec_size&amp;#10;vec_size = 80&amp;#10;global embedding_size&amp;#10;embedding_size = 768&amp;#10;&amp;#10;# Load PCA and covariance matrix&amp;#10;global pca&amp;#10;pca = pk.load(open(&quot;pca.pkl&quot;,'rb')) &amp;#10;global cov&amp;#10;cov = np.loadtxt(&quot;covariance_matrix.txt&quot;)&amp;#10;&amp;#10;this_gen_embeddings = np.zeros((pop_size, vec_size))&amp;#10;parent_1 = np.zeros((1, vec_size))&amp;#10;parent_2 = np.zeros((1, vec_size))&amp;#10;&amp;#10;all_embeddings = np.zeros((max_iters, pop_size, vec_size))&amp;#10;all_ratings = np.zeros((max_iters, pop_size))&amp;#10;all_scr = np.zeros((max_iters, pop_size))&amp;#10;&amp;#10;## Set unCLIP device&amp;#10;if not dev_mode:&amp;#10;    global device&amp;#10;    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')&amp;#10;    print('Using device:', device)&amp;#10;&amp;#10;    ## Load model&amp;#10;    global pipe&amp;#10;    pipe = StableUnCLIPImg2ImgPipeline.from_pretrained(model_path, torch_dtype=torch.float16, variation=&quot;fp16&quot;)&amp;#10;    pipe = pipe.to(device)&amp;#10;    # pipe.enable_model_cpu_offload()&amp;#10;    # pipe.enable_vae_slicing()" valType="extendedCode" updates="constant" name="Begin Experiment"/>
         <Param val="" valType="extendedCode" updates="constant" name="Begin JS Experiment"/>
         <Param val="" valType="extendedCode" updates="constant" name="Begin JS Routine"/>
-        <Param val="iteration = generations.thisN&amp;#10;&amp;#10;## Generate vectors&amp;#10;if iteration == 0:&amp;#10;    this_trial_embeddings = np.random.multivariate_normal(np.zeros(vec_size), cov, size=pop_size)&amp;#10;else:&amp;#10;    ## CMA algorithm&amp;#10;    fitness = all_ratings[iteration - 1, :]&amp;#10;    embeddings = all_embeddings[iteration - 1, :, :]&amp;#10;    this_trial_embeddings = new_generation(fitness, embeddings, iteration)&amp;#10;    &amp;#10;all_embeddings[iteration, :, :] = this_trial_embeddings&amp;#10;&amp;#10;## Generate batch of images&amp;#10;for i in range(pop_size):&amp;#10;    image_name = &quot;images/num-{i}.png&quot;&amp;#10;    pcs = this_trial_embeddings[i,:]&amp;#10;    embedding = pca.inverse_transform(pcs)&amp;#10;    if not dev_mode:&amp;#10;        generate_image(embedding, image_name)&amp;#10;        &amp;#10;## Save image backups&amp;#10;dest_path = f'archived_images/generation_{iteration}'&amp;#10;if not os.path.exists(dest_path):&amp;#10;    os.mkdir(dest_path)&amp;#10;shutil.copytree('images', dest_path, dirs_exist_ok=True) " valType="extendedCode" updates="constant" name="Begin Routine"/>
+        <Param val="iteration = generations.thisN&amp;#10;&amp;#10;## Generate vectors&amp;#10;if iteration == 0:&amp;#10;    this_trial_embeddings = np.random.multivariate_normal(np.zeros(vec_size), cov, size=pop_size)&amp;#10;else:&amp;#10;    ## CMA algorithm&amp;#10;    fitness = []&amp;#10;    if scr_mode:&amp;#10;        fitness = all_scr[iteration - 1, :]&amp;#10;    else:&amp;#10;        fitness = all_ratings[iteration - 1, :]&amp;#10;    embeddings = all_embeddings[iteration - 1, :, :]&amp;#10;    this_trial_embeddings = new_generation(fitness, embeddings, iteration)&amp;#10;    &amp;#10;all_embeddings[iteration, :, :] = this_trial_embeddings&amp;#10;&amp;#10;## Generate batch of images&amp;#10;for i in range(pop_size):&amp;#10;    image_name = f&quot;images/num-{i}.png&quot;&amp;#10;    pcs = this_trial_embeddings[i,:]&amp;#10;    embedding = pca.inverse_transform(pcs)&amp;#10;    if not dev_mode:&amp;#10;        generate_image(embedding, image_name)&amp;#10;&amp;#10;continueRoutine = False&amp;#10;" valType="extendedCode" updates="constant" name="Begin Routine"/>
         <Param val="Py" valType="str" updates="None" name="Code Type"/>
         <Param val="" valType="extendedCode" updates="constant" name="Each Frame"/>
         <Param val="" valType="extendedCode" updates="constant" name="Each JS Frame"/>
         <Param val="" valType="extendedCode" updates="constant" name="End Experiment"/>
         <Param val="" valType="extendedCode" updates="constant" name="End JS Experiment"/>
         <Param val="" valType="extendedCode" updates="constant" name="End JS Routine"/>
-        <Param val="## Print outputs to txt&amp;#10;np.savetxt('top_embeddings.txt', all_embeddings.reshape((max_iters*pop_size, vec_size)), delimiter=',')&amp;#10;np.savetxt('all_ratings.txt', all_ratings, delimiter=',')" valType="extendedCode" updates="constant" name="End Routine"/>
+        <Param val="## Print outputs to txt&amp;#10;np.savetxt('data/{participant}/all_embeddings.txt', all_embeddings.reshape((max_iters*pop_size, vec_size)), delimiter=',')&amp;#10;np.savetxt('data/{participant}/all_ratings.txt', all_ratings, delimiter=',')&amp;#10;np.savetxt('data/{participant}/all_scr.txt', all_scr, delimiter=',')&amp;#10;&amp;#10;## Save image backups&amp;#10;dest_path = f'data/{participant}/images/generation_{iteration}'&amp;#10;if not os.path.exists(dest_path):&amp;#10;    os.mkdir(dest_path)&amp;#10;shutil.copytree('images', dest_path, dirs_exist_ok=True) &amp;#10;&amp;#10;# Clear EDA file&amp;#10;with open(&quot;eda_data.txt&quot;, 'w') as file:&amp;#10;    pass" valType="extendedCode" updates="constant" name="End Routine"/>
         <Param val="False" valType="bool" updates="None" name="disabled"/>
         <Param val="generate_images" valType="code" updates="None" name="name"/>
       </CodeComponent>
@@ -301,7 +326,7 @@
         <Param val="" valType="num" updates="constant" name="opacity"/>
         <Param val="0" valType="num" updates="constant" name="ori"/>
         <Param val="(0, 0.25)" valType="list" updates="constant" name="pos"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="False" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
         <Param val="0.0" valType="code" updates="None" name="startVal"/>
@@ -338,14 +363,14 @@
         <Param val="" valType="extendedCode" updates="constant" name="Begin Experiment"/>
         <Param val="" valType="extendedCode" updates="constant" name="Begin JS Experiment"/>
         <Param val="" valType="extendedCode" updates="constant" name="Begin JS Routine"/>
-        <Param val="" valType="extendedCode" updates="constant" name="Begin Routine"/>
+        <Param val="## Get SCR amplitudes&amp;#10;&amp;#10;if scr_attached:&amp;#10;    # Get start and end times of trial&amp;#10;    current_time = datetime.now().time()&amp;#10;    dummy_datetime = datetime.combine(datetime.today(), current_time)&amp;#10;    # Get relevant times&amp;#10;    end_time = (dummy_datetime - timedelta(seconds=1)).time()&amp;#10;    start_time = (dummy_datetime - timedelta(seconds=4)).time()&amp;#10;    baseline_time = (dummy_datetime - timedelta(seconds=6)).time()&amp;#10;&amp;#10;    ## Load EDA data&amp;#10;    eda_data = pd.read_csv(&quot;eda_data.txt&quot;, names=[&quot;eda&quot;, &quot;time&quot;])&amp;#10;    # Convert the 'time' column to datetime format&amp;#10;    eda_data['time'] = pd.to_datetime(eda_data['time'], format='%H:%M:%S.%f').dt.time&amp;#10;    # Apply smoothing to reduce noise&amp;#10;    eda_data['eda_smooth'] = eda_data['eda'].rolling(window=5, center=True).mean()&amp;#10;    &amp;#10;    # Filter the DataFrame based on the time range&amp;#10;    baseline_data = eda_data[(eda_data['time'] &gt;= baseline_time) &amp; (eda_data['time'] &lt;= start_time)]&amp;#10;    image_data = eda_data[(eda_data['time'] &gt;= start_time) &amp; (eda_data['time'] &lt;= end_time)]&amp;#10;&amp;#10;    # Get average baseline SCR&amp;#10;    baseline = baseline_data['eda_smooth'].mean()&amp;#10;&amp;#10;    ## Get the sampling rate and resample&amp;#10;    sampling_rate = len(image_data) / 3.0&amp;#10;    scr_score = (image_data['eda_smooth'] - baseline).sum() / sampling_rate&amp;#10;    &amp;#10;    # Reset the EDA file after each use to avoid bloating it&amp;#10;    with open(&quot;eda_data.txt&quot;, 'w') as file:&amp;#10;        pass&amp;#10;" valType="extendedCode" updates="constant" name="Begin Routine"/>
         <Param val="Py" valType="str" updates="None" name="Code Type"/>
         <Param val="" valType="extendedCode" updates="constant" name="Each Frame"/>
         <Param val="" valType="extendedCode" updates="constant" name="Each JS Frame"/>
         <Param val="" valType="extendedCode" updates="constant" name="End Experiment"/>
         <Param val="" valType="extendedCode" updates="constant" name="End JS Experiment"/>
         <Param val="" valType="extendedCode" updates="constant" name="End JS Routine"/>
-        <Param val="all_ratings[iteration,trial] = slider.getRating()" valType="extendedCode" updates="constant" name="End Routine"/>
+        <Param val="all_ratings[iteration,trial] = slider.getRating()&amp;#10;all_scr[iteration,trial] = scr_score" valType="extendedCode" updates="constant" name="End Routine"/>
         <Param val="False" valType="bool" updates="None" name="disabled"/>
         <Param val="code_2" valType="code" updates="None" name="name"/>
       </CodeComponent>
@@ -372,7 +397,7 @@
         <Param val="" valType="num" updates="constant" name="padding"/>
         <Param val="(0, -0.25)" valType="list" updates="constant" name="pos"/>
         <Param val="every click" valType="str" updates="None" name="save"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="False" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="(0.25, 0.15)" valType="list" updates="constant" name="size"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
@@ -415,7 +440,7 @@
         <Param val="" valType="num" updates="constant" name="opacity"/>
         <Param val="0" valType="num" updates="constant" name="ori"/>
         <Param val="(0, 0)" valType="list" updates="constant" name="pos"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="False" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
         <Param val="0.0" valType="code" updates="None" name="startVal"/>
@@ -430,12 +455,12 @@
         <Param val="'space'" valType="list" updates="constant" name="allowedKeys"/>
         <Param val="" valType="str" updates="constant" name="correctAns"/>
         <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="True" valType="bool" updates="constant" name="discard previous"/>
+        <Param val="False" valType="bool" updates="constant" name="discard previous"/>
         <Param val="" valType="code" updates="None" name="durationEstim"/>
         <Param val="True" valType="bool" updates="constant" name="forceEndRoutine"/>
         <Param val="key_resp" valType="code" updates="None" name="name"/>
         <Param val="press" valType="str" updates="constant" name="registerOn"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="False" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
         <Param val="0.0" valType="code" updates="None" name="startVal"/>
@@ -443,7 +468,7 @@
         <Param val="" valType="code" updates="constant" name="stopVal"/>
         <Param val="last key" valType="str" updates="constant" name="store"/>
         <Param val="False" valType="bool" updates="constant" name="storeCorrect"/>
-        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
+        <Param val="False" valType="bool" updates="constant" name="syncScreenRefresh"/>
       </KeyboardComponent>
     </Routine>
     <Routine name="end_text">
@@ -476,7 +501,7 @@
         <Param val="" valType="num" updates="constant" name="opacity"/>
         <Param val="0" valType="num" updates="constant" name="ori"/>
         <Param val="(0, 0)" valType="list" updates="constant" name="pos"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="False" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
         <Param val="0.0" valType="code" updates="None" name="startVal"/>
@@ -488,9 +513,52 @@
         <Param val="" valType="num" updates="constant" name="wrapWidth"/>
       </TextComponent>
     </Routine>
+    <Routine name="generate_text">
+      <RoutineSettingsComponent name="generate_text" plugin="None">
+        <Param val="none" valType="str" updates="None" name="backgroundFit"/>
+        <Param val="" valType="str" updates="None" name="backgroundImg"/>
+        <Param val="$[0,0,0]" valType="color" updates="None" name="color"/>
+        <Param val="rgb" valType="str" updates="None" name="colorSpace"/>
+        <Param val="" valType="str" updates="constant" name="desc"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="generate_text" valType="code" updates="None" name="name"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="constant" name="skipIf"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="" valType="code" updates="constant" name="stopVal"/>
+        <Param val="False" valType="bool" updates="None" name="useWindowParams"/>
+      </RoutineSettingsComponent>
+      <TextComponent name="text_5" plugin="None">
+        <Param val="white" valType="color" updates="constant" name="color"/>
+        <Param val="rgb" valType="str" updates="constant" name="colorSpace"/>
+        <Param val="1" valType="num" updates="constant" name="contrast"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="None" valType="str" updates="constant" name="flip"/>
+        <Param val="Open Sans" valType="str" updates="constant" name="font"/>
+        <Param val="LTR" valType="str" updates="None" name="languageStyle"/>
+        <Param val="0.05" valType="num" updates="constant" name="letterHeight"/>
+        <Param val="text_5" valType="code" updates="None" name="name"/>
+        <Param val="" valType="num" updates="constant" name="opacity"/>
+        <Param val="0" valType="num" updates="constant" name="ori"/>
+        <Param val="(0, 0)" valType="list" updates="constant" name="pos"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="0.0" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="0.5" valType="code" updates="constant" name="stopVal"/>
+        <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
+        <Param val="Generating..." valType="str" updates="constant" name="text"/>
+        <Param val="from exp settings" valType="str" updates="None" name="units"/>
+        <Param val="" valType="num" updates="constant" name="wrapWidth"/>
+      </TextComponent>
+    </Routine>
   </Routines>
   <Flow>
     <Routine name="start_text"/>
+    <Routine name="washout"/>
     <LoopInitiator loopType="TrialHandler" name="generations">
       <Param name="Selected rows" updates="None" val="" valType="str"/>
       <Param name="conditions" updates="None" val="None" valType="str"/>
@@ -502,7 +570,9 @@
       <Param name="name" updates="None" val="generations" valType="code"/>
       <Param name="random seed" updates="None" val="" valType="code"/>
     </LoopInitiator>
+    <Routine name="generate_text"/>
     <Routine name="generating"/>
+    <Routine name="washout"/>
     <LoopInitiator loopType="TrialHandler" name="trials">
       <Param name="Selected rows" updates="None" val="" valType="str"/>
       <Param name="conditions" updates="None" val="None" valType="str"/>
@@ -515,7 +585,6 @@
       <Param name="random seed" updates="None" val="" valType="code"/>
     </LoopInitiator>
     <Routine name="trial"/>
-    <Routine name="washout"/>
     <Routine name="rating"/>
     <Routine name="washout"/>
     <LoopTerminator name="trials"/>
