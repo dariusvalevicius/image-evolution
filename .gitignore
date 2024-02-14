@@ -1,2 +1,6 @@
 *images/
 psychopy/data/
+figures/
+generation/
+sim/
+*pycache*

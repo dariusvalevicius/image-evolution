@@ -43,7 +43,7 @@ def plot_pca(data):
 
 if __name__ == "__main__":
 
-    embeddings = np.loadtxt("imagenet_embeddings.txt", delimiter=',')
+    embeddings = np.loadtxt("all_embeddings.txt", delimiter=',')
     logits = np.loadtxt("imagenet_logits.txt", delimiter=',')#[:, :398]
 
     # Find the indices of the max values for each row
@@ -51,7 +51,6 @@ if __name__ == "__main__":
     
     # Find the rows where the max index is less than n
     # logits = logits[np.argmax(logits, axis=1) < 398]
-
 
     print(embeddings.shape)
     print(logits.shape)
@@ -81,74 +80,75 @@ if __name__ == "__main__":
     component_scores = pca.transform(embeddings)[:, :num_components]
     print(component_scores.shape)
 
-    # Initialize the matrix to store regression coefficients
-    coeff_matrix = np.zeros((num_components, logits.shape[1]))
 
-    # Iterate through each component and perform linear regression
-    for i in range(num_components):
-        # Extract the i-th principal component
-        component_i = component_scores[:, i].reshape(-1, 1)
+    # # Initialize the matrix to store regression coefficients
+    # coeff_matrix = np.zeros((num_components, logits.shape[1]))
 
-        # Fit linear regression model
-        model = LinearRegression()
-        model.fit(component_i, logits)
+    # # Iterate through each component and perform linear regression
+    # for i in range(num_components):
+    #     # Extract the i-th principal component
+    #     component_i = component_scores[:, i].reshape(-1, 1)
 
-        # Save regression coefficient in the matrix
-        coeff_matrix[i, :] = model.coef_.ravel()
+    #     # Fit linear regression model
+    #     model = LinearRegression()
+    #     model.fit(component_i, logits)
 
-    # Find the maximum value in each row
-    max_values_per_row = np.max(np.abs(coeff_matrix), axis=1)
+    #     # Save regression coefficient in the matrix
+    #     coeff_matrix[i, :] = model.coef_.ravel()
 
-    # Sort the maximum values
-    sorted_max_values = np.sort(max_values_per_row)
+    # # Find the maximum value in each row
+    # max_values_per_row = np.max(np.abs(coeff_matrix), axis=1)
 
-    # Plot the sorted maximum values
-    plt.plot(max_values_per_row, marker='o', linestyle='-', color='b')
-    plt.title('Maximum Values per Row')
-    plt.xlabel('Row')
-    plt.ylabel('Maximum Value')
-    plt.grid(True)
-    plt.show()
+    # # Sort the maximum values
+    # sorted_max_values = np.sort(max_values_per_row)
 
-
-    # Step 1: Read the text file
-    file_path = 'imagenet_labels.txt'  # Replace with your file path
-    with open(file_path, 'r') as file:
-        file_content = file.read()
-
-    # Step 2: Convert text to a dictionary
-    try:
-        label_dict = ast.literal_eval(file_content)
-    except (ValueError, SyntaxError) as e:
-        print(f"Error while parsing the file content: {e}")
-        label_dict = {}
-
-    x_labels = list(label_dict.values())[:50]
-    x_labels[:] = (elem.split(',')[0] for elem in x_labels)
-
-    # Plot the heatmap
-    plt.figure(figsize=(10, 6), layout="tight")
-    plt.imshow(coeff_matrix[:,:50], cmap='viridis', aspect='auto', interpolation='none')
-
-    plt.xticks(np.arange(len(x_labels)), labels=x_labels, rotation=90)
-
-    # Add labels and title
-    plt.colorbar(label='Regression Coefficient')
-    plt.xlabel('Feature Index')
-    plt.ylabel('Principal Components')
-    plt.title('Regression Coefficients Heatmap')
-
-    plt.show()
+    # # Plot the sorted maximum values
+    # plt.plot(max_values_per_row, marker='o', linestyle='-', color='b')
+    # plt.title('Maximum Values per Row')
+    # plt.xlabel('Row')
+    # plt.ylabel('Maximum Value')
+    # plt.grid(True)
+    # plt.show()
 
 
-    cov = np.cov(component_scores.T)
-    plt.figure(figsize=(10, 6), layout="tight")
-    plt.imshow(cov, cmap='viridis', aspect='auto', interpolation='none')
-    plt.show()
+    # # Step 1: Read the text file
+    # file_path = 'imagenet_labels.txt'  # Replace with your file path
+    # with open(file_path, 'r') as file:
+    #     file_content = file.read()
 
-    np.savetxt("covariance_matrix.txt", cov)
+    # # Step 2: Convert text to a dictionary
+    # try:
+    #     label_dict = ast.literal_eval(file_content)
+    # except (ValueError, SyntaxError) as e:
+    #     print(f"Error while parsing the file content: {e}")
+    #     label_dict = {}
 
-    pk.dump(pca, open("pca.pkl","wb"))
+    # x_labels = list(label_dict.values())[:50]
+    # x_labels[:] = (elem.split(',')[0] for elem in x_labels)
+
+    # # Plot the heatmap
+    # plt.figure(figsize=(10, 6), layout="tight")
+    # plt.imshow(coeff_matrix[:,:50], cmap='viridis', aspect='auto', interpolation='none')
+
+    # plt.xticks(np.arange(len(x_labels)), labels=x_labels, rotation=90)
+
+    # # Add labels and title
+    # plt.colorbar(label='Regression Coefficient')
+    # plt.xlabel('Feature Index')
+    # plt.ylabel('Principal Components')
+    # plt.title('Regression Coefficients Heatmap')
+
+    # plt.show()
+
+
+    # cov = np.cov(component_scores.T)
+    # plt.figure(figsize=(10, 6), layout="tight")
+    # plt.imshow(cov, cmap='viridis', aspect='auto', interpolation='none')
+    # plt.show()
+
+    # np.savetxt("covariance_matrix.txt", cov)
+
+    # pk.dump(pca, open("pca.pkl","wb"))
 
 
     ## Generate some images
@@ -171,18 +171,18 @@ if __name__ == "__main__":
     #     unCLIP_evolution.generate_image(pipe, random_embeds[i,:], f"generation/random-img-{i}.png")
 
 
-    max_indices = np.argmax(logits, axis=1)
-    # Create a histogram of the max indices
-    plt.hist(max_indices, bins=398, edgecolor='black')
+    # max_indices = np.argmax(logits, axis=1)
+    # # Create a histogram of the max indices
+    # plt.hist(max_indices, bins=398, edgecolor='black')
     
-    # Customize the plot
-    plt.title('Histogram of Max Indices in Each Row')
-    plt.xlabel('Index')
-    plt.ylabel('Frequency')
-    plt.grid(axis='y', alpha=0.75)
+    # # Customize the plot
+    # plt.title('Histogram of Max Indices in Each Row')
+    # plt.xlabel('Index')
+    # plt.ylabel('Frequency')
+    # plt.grid(axis='y', alpha=0.75)
 
-    # Show the plot
-    plt.show()
+    # # Show the plot
+    # plt.show()
 
     # Create a UMAP model
     umap_model = umap.UMAP(n_neighbors=5, min_dist=0.3, metric='euclidean')
@@ -191,14 +191,15 @@ if __name__ == "__main__":
     umap_result = umap_model.fit_transform(component_scores)
 
     # max_indices = np.arange(3932)
+    colors = np.arange(2700)
 
     # Plot the UMAP result
-    plt.scatter(umap_result[:, 0], umap_result[:, 1], c=max_indices)
+    plt.scatter(umap_result[:, 0], umap_result[:, 1], c=colors)
     plt.title('UMAP Projection')
     plt.colorbar()
     plt.show()
 
-    pk.dump(umap_model, open("umap.pkl","wb"))
+    # pk.dump(umap_model, open("umap.pkl","wb"))
 
 
     # # Isomap model

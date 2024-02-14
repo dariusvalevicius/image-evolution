@@ -4,6 +4,33 @@ import glob
 import numpy as np
 import torch
 import shutil
+import os
+
+# Define parameters
+imagenet_indices = {
+    "rabbit": 330,
+    "cockroach": 314,
+    "gecko": 38,
+    "spider": 76,
+    "chicken": 137,
+    "grasshopper": 311,
+    "butterfly": 323,
+    "bird": 15,
+    "peacock": 84,
+    "dog": 207,
+    "cat": 281,
+    "snake": 61,
+    "fish": 391,
+    "frog": 31,
+    "turtle": 37,
+    "beetle": 305,
+    "ant": 310,
+    "bee": 309,
+    "guinea pig": 338,
+    "sheep": 348,
+    "shark": 2,
+    "whale": 147
+}
 
 
 def return_score(processor, model, image_path):
@@ -40,15 +67,42 @@ if __name__ == "__main__":
 
     processor, model = prep_model('../vit-base-patch16-224')
 
-    glob_str = "../imagenet_animals/*.JPEG"
+    # Get a list of all entries (files and directories) in the folder
+    entries = os.listdir('sim')
 
-    image_paths = glob.glob(glob_str) # First 10,000 images
-    x = np.zeros((len(image_paths), 1000))    
+    # Filter out only the directories
+    directories = [entry for entry in entries if os.path.isdir(os.path.join('sim', entry))]
 
-    for i in range(len(image_paths)):
-        score = return_score(processor, model, image_paths[i])
-        x[i, :] = score
-        print(f"{i}/{len(image_paths)}")
+
+
+    for directory in directories:
+        x = np.zeros((10,8)) 
+
+        for i in range(10):
+
+            image_paths = glob.glob(f"sim/{directory}/generation_{i}/*.PNG")
+            for j in range(len(image_paths)):
+                logits = return_score(processor, model, image_paths[j])[:,:398]
+                probabilities = np.exp(logits) / np.sum(np.exp(logits))
+                # print(probabilities.shape)
+                x[i, j] = probabilities[0, imagenet_indices[directory]]
+
+        print(f"Finished: {directory}")        
+
+        np.savetxt(f'sim/{directory}/probabilities.txt', x, delimiter=',')
+
+
+
+
+    # glob_str = "../imagenet_animals/*.JPEG"
+
+    # image_paths = glob.glob(glob_str) # First 10,000 images
+    # x = np.zeros((len(image_paths), 1000))    
+
+    # for i in range(len(image_paths)):
+    #     score = return_score(processor, model, image_paths[i])
+    #     x[i, :] = score
+    #     print(f"{i}/{len(image_paths)}")
 
     # np.savetxt('all_logits.txt', x, delimiter=',')
 
@@ -75,5 +129,5 @@ if __name__ == "__main__":
     # # Subset the array based on the indices
     # result = x[indices, :]
 
-    np.savetxt('imagenet_logits.txt', x[:,:398], delimiter=',')
+    # np.savetxt('imagenet_logits.txt', x[:,:398], delimiter=',')
 

@@ -18,8 +18,14 @@ def print_compute_handler(unused_addr, args, volume):
     print("[{0}] ~ {1}".format(args[0], args[1](volume)))
   except ValueError: pass
 
-def append_to_file(unused_addr, *args):
+def append_eda_to_file(unused_addr, *args):
   with open("eda_data.txt",'a') as f:
+        now = datetime.now().time().strftime('%H:%M:%S.%f')[:-3]
+        string = f"{args[0]},{now}\n"
+        f.write(string)
+
+def append_samp_to_file(unused_addr, *args):
+  with open("samp_data.txt",'a') as f:
         now = datetime.now().time().strftime('%H:%M:%S.%f')[:-3]
         string = f"{args[0]},{now}\n"
         f.write(string)
@@ -43,9 +49,9 @@ if __name__ == "__main__":
 #   dispatcher.map("/filter", print)
 #   dispatcher.map("/*", print)
   dispatcher.map("/EmotiBit/0/EDA", print)
-  dispatcher.map("/EmotiBit/0/EDA", append_to_file)
-  # dispatcher.map("/EmotiBit/0/SCR:AMP", print)
-  # dispatcher.map("/EmotiBit/0/SCR:AMP", append_to_file)
+  dispatcher.map("/EmotiBit/0/EDA", append_eda_to_file)
+  dispatcher.map("/EmotiBit/0/SCR:AMP", print)
+  dispatcher.map("/EmotiBit/0/SCR:AMP", append_samp_to_file)
   dispatcher.map("/volume", print_volume_handler, "Volume")
   dispatcher.map("/logvolume", print_compute_handler, "Log volume", math.log)
 
