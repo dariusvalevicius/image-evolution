@@ -1,7 +1,7 @@
-toch
+torch
 numpy
 diffusers
-sklearn
-pickle
+scikit-learn
 pandas
-pythonosc
+python-osc
+seaborn
