@@ -18,16 +18,10 @@ def print_compute_handler(unused_addr, args, volume):
     print("[{0}] ~ {1}".format(args[0], args[1](volume)))
   except ValueError: pass
 
-def append_eda_to_file(unused_addr, *args):
-  with open("eda_data.txt",'a') as f:
+def append_to_file(unused_addr, *args):
+  with open(args[0][0],'a') as f:
         now = datetime.now().time().strftime('%H:%M:%S.%f')[:-3]
-        string = f"{args[0]},{now}\n"
-        f.write(string)
-
-def append_samp_to_file(unused_addr, *args):
-  with open("samp_data.txt",'a') as f:
-        now = datetime.now().time().strftime('%H:%M:%S.%f')[:-3]
-        string = f"{args[0]},{now}\n"
+        string = f"{args[1]},{now}\n"
         f.write(string)
 
 if __name__ == "__main__":
@@ -48,10 +42,16 @@ if __name__ == "__main__":
   dispatcher = Dispatcher()
 #   dispatcher.map("/filter", print)
 #   dispatcher.map("/*", print)
-  dispatcher.map("/EmotiBit/0/EDA", print)
-  dispatcher.map("/EmotiBit/0/EDA", append_eda_to_file)
-  dispatcher.map("/EmotiBit/0/SCR:AMP", print)
-  dispatcher.map("/EmotiBit/0/SCR:AMP", append_samp_to_file)
+  # dispatcher.map("/EmotiBit/0/EDA", print)
+  dispatcher.map("/EmotiBit/0/EDA", append_to_file, "eda_data.txt")
+  # dispatcher.map("/EmotiBit/0/SCR:AMP", print)
+  dispatcher.map("/EmotiBit/0/SCR:AMP", append_to_file, "samp_data.txt")
+  # dispatcher.map("/EmotiBit/0/TEMP", print)
+  dispatcher.map("/EmotiBit/0/TEMP", append_to_file, "temp_data.txt")
+  # dispatcher.map("/EmotiBit/0/HR", print)
+  dispatcher.map("/EmotiBit/0/HR", append_to_file, "hr_data.txt")
+
+
   dispatcher.map("/volume", print_volume_handler, "Volume")
   dispatcher.map("/logvolume", print_compute_handler, "Log volume", math.log)
 

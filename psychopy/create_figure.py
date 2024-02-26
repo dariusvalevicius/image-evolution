@@ -412,9 +412,11 @@ if __name__ == "__main__":
     # create_all(810175, "scr", show=True, save=False)
     # create_all(701338, "scr", show=True, save=False)
     # create_all(8193, "scr", show=True, save=True)
+    # create_all(665548, "scr", show=True, save=True)
+    create_all(831467, "control", show=True, save=True)
+    create_all(831467, "selfreport", show=True, save=True)
+    create_all(831467, "scr", show=True, save=True)
 
-
-
-    plot_umap(50)
-    # if save: plt.savefig(f'{root}/figures/umap.png')
-    plt.show()
+    # plot_umap(50)
+    # # if save: plt.savefig(f'{root}/figures/umap.png')
+    # plt.show()
