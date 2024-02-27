@@ -254,7 +254,7 @@ def plot_umap(participant):
     ratings = ratings.flatten()
 
     # Load the UMAP model from the pickle file
-    with open('umap.pkl', 'rb') as file:
+    with open('models/umap.pkl', 'rb') as file:
         umap_model = pickle.load(file)
 
     # Transform your data using the UMAP model

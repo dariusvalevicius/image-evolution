@@ -5,6 +5,7 @@ received packets.
 """
 import argparse
 import math
+import os
 
 from pythonosc.dispatcher import Dispatcher
 from pythonosc import osc_server
@@ -19,7 +20,11 @@ def print_compute_handler(unused_addr, args, volume):
   except ValueError: pass
 
 def append_to_file(unused_addr, *args):
-  with open(args[0][0],'a') as f:
+
+  if not os.path.exists('stream'):
+    os.makedirs('stream')
+
+  with open(f'stream/{args[0][0]}','a') as f:
         now = datetime.now().time().strftime('%H:%M:%S.%f')[:-3]
         string = f"{args[1]},{now}\n"
         f.write(string)
@@ -35,9 +40,9 @@ if __name__ == "__main__":
   args = parser.parse_args()
 
 
-  ## Reset data file
-  with open("eda_data.txt", 'w') as file:
-    pass
+  # ## Reset data file
+  # with open("eda_data.txt", 'w') as file:
+  #   pass
 
   dispatcher = Dispatcher()
 #   dispatcher.map("/filter", print)

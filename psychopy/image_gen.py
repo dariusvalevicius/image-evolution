@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2023.2.3),
-    on February 26, 2024, at 12:36
+    on February 27, 2024, at 13:28
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -458,9 +458,9 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
     
     # Load PCA and covariance matrix
     global pca
-    pca = pk.load(open("pca.pkl",'rb')) 
+    pca = pk.load(open("models/pca.pkl",'rb')) 
     global cov
-    cov = np.loadtxt("covariance_matrix.txt")
+    cov = np.loadtxt("models/covariance_matrix.txt")
     
     
     ## Start osc_server subprocess
@@ -489,14 +489,14 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         color=[1,1,1], colorSpace='rgb', opacity=None,
         flipHoriz=False, flipVert=False,
         texRes=128.0, interpolate=True, depth=-1.0)
-    text_4 = visual.TextStim(win=win, name='text_4',
+    pre_stim = visual.TextStim(win=win, name='pre_stim',
         text='+',
         font='Open Sans',
         pos=(0, 0), height=0.05, wrapWidth=None, ori=0.0, 
         color='black', colorSpace='rgb', opacity=None, 
         languageStyle='LTR',
         depth=-2.0);
-    text_8 = visual.TextStim(win=win, name='text_8',
+    post_stim = visual.TextStim(win=win, name='post_stim',
         text='+',
         font='Open Sans',
         pos=(0, 0), height=0.05, wrapWidth=None, ori=0.0, 
@@ -833,12 +833,26 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
         all_embeddings = np.zeros((max_iters, pop_size, vec_size))
         all_ratings = np.zeros((max_iters, pop_size))
         all_scr = np.zeros((max_iters, pop_size))
-        all_scr_means = np.zeros((max_iters, pop_size))
         scr_data = np.zeros((max_iters, pop_size, eda_samples))
-        all_hr_means = np.zeros((max_iters, pop_size))
-        all_temp_means = np.zeros((max_iters, pop_size))
+        
+        
+        trial_timings = pd.DataFrame(columns=['generation', 'trial', 'start_time', 'end_time'])
+        
+        #all_scr_means = np.zeros((max_iters, pop_size))
+        #all_hr_means = np.zeros((max_iters, pop_size))
+        #all_temp_means = np.zeros((max_iters, pop_size))
         
         failed_trials = []
+        
+        # Reset the EDA file after each use to avoid bloating it
+        with open("stream/eda_data.txt", 'w') as file:
+            pass
+        with open("stream/hr_data.txt", 'w') as file:
+            pass
+        with open("stream/temp_data.txt", 'w') as file:
+            pass
+        with open("stream/samp_data.txt", 'w') as file:
+            pass
         # keep track of which components have finished
         clear_dataComponents = [text_5]
         for thisComponent in clear_dataComponents:
@@ -1113,15 +1127,7 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
                     if not dev_mode:
                         generate_image(embedding, image_name)
                 
-                # Reset the EDA file after each use to avoid bloating it
-                with open("eda_data.txt", 'w') as file:
-                    pass
-                with open("hr_data.txt", 'w') as file:
-                    pass
-                with open("temp_data.txt", 'w') as file:
-                    pass
-                with open("samp_data.txt", 'w') as file:
-                    pass
+                
                 continueRoutine = False
                 # keep track of which components have finished
                 generatingComponents = [text_2]
@@ -1241,7 +1247,7 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
                     
                     image.setImage(image_name)
                     # keep track of which components have finished
-                    trialComponents = [image, text_4, text_8]
+                    trialComponents = [image, pre_stim, post_stim]
                     for thisComponent in trialComponents:
                         thisComponent.tStart = None
                         thisComponent.tStop = None
@@ -1297,63 +1303,71 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
                                 image.status = FINISHED
                                 image.setAutoDraw(False)
                         
-                        # *text_4* updates
+                        # *pre_stim* updates
                         
-                        # if text_4 is starting this frame...
-                        if text_4.status == NOT_STARTED and tThisFlip >= 4-frameTolerance:
+                        # if pre_stim is starting this frame...
+                        if pre_stim.status == NOT_STARTED and tThisFlip >= 4-frameTolerance:
                             # keep track of start time/frame for later
-                            text_4.frameNStart = frameN  # exact frame index
-                            text_4.tStart = t  # local t and not account for scr refresh
-                            text_4.tStartRefresh = tThisFlipGlobal  # on global time
-                            win.timeOnFlip(text_4, 'tStartRefresh')  # time at next scr refresh
+                            pre_stim.frameNStart = frameN  # exact frame index
+                            pre_stim.tStart = t  # local t and not account for scr refresh
+                            pre_stim.tStartRefresh = tThisFlipGlobal  # on global time
+                            win.timeOnFlip(pre_stim, 'tStartRefresh')  # time at next scr refresh
+                            # add timestamp to datafile
+                            thisExp.timestampOnFlip(win, 'pre_stim.started')
                             # update status
-                            text_4.status = STARTED
-                            text_4.setAutoDraw(True)
+                            pre_stim.status = STARTED
+                            pre_stim.setAutoDraw(True)
                         
-                        # if text_4 is active this frame...
-                        if text_4.status == STARTED:
+                        # if pre_stim is active this frame...
+                        if pre_stim.status == STARTED:
                             # update params
                             pass
                         
-                        # if text_4 is stopping this frame...
-                        if text_4.status == STARTED:
+                        # if pre_stim is stopping this frame...
+                        if pre_stim.status == STARTED:
                             # is it time to stop? (based on global clock, using actual start)
-                            if tThisFlipGlobal > text_4.tStartRefresh + 1-frameTolerance:
+                            if tThisFlipGlobal > pre_stim.tStartRefresh + 1-frameTolerance:
                                 # keep track of stop time/frame for later
-                                text_4.tStop = t  # not accounting for scr refresh
-                                text_4.frameNStop = frameN  # exact frame index
+                                pre_stim.tStop = t  # not accounting for scr refresh
+                                pre_stim.frameNStop = frameN  # exact frame index
+                                # add timestamp to datafile
+                                thisExp.timestampOnFlip(win, 'pre_stim.stopped')
                                 # update status
-                                text_4.status = FINISHED
-                                text_4.setAutoDraw(False)
+                                pre_stim.status = FINISHED
+                                pre_stim.setAutoDraw(False)
                         
-                        # *text_8* updates
+                        # *post_stim* updates
                         
-                        # if text_8 is starting this frame...
-                        if text_8.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
+                        # if post_stim is starting this frame...
+                        if post_stim.status == NOT_STARTED and tThisFlip >= 0.0-frameTolerance:
                             # keep track of start time/frame for later
-                            text_8.frameNStart = frameN  # exact frame index
-                            text_8.tStart = t  # local t and not account for scr refresh
-                            text_8.tStartRefresh = tThisFlipGlobal  # on global time
-                            win.timeOnFlip(text_8, 'tStartRefresh')  # time at next scr refresh
+                            post_stim.frameNStart = frameN  # exact frame index
+                            post_stim.tStart = t  # local t and not account for scr refresh
+                            post_stim.tStartRefresh = tThisFlipGlobal  # on global time
+                            win.timeOnFlip(post_stim, 'tStartRefresh')  # time at next scr refresh
+                            # add timestamp to datafile
+                            thisExp.timestampOnFlip(win, 'post_stim.started')
                             # update status
-                            text_8.status = STARTED
-                            text_8.setAutoDraw(True)
+                            post_stim.status = STARTED
+                            post_stim.setAutoDraw(True)
                         
-                        # if text_8 is active this frame...
-                        if text_8.status == STARTED:
+                        # if post_stim is active this frame...
+                        if post_stim.status == STARTED:
                             # update params
                             pass
                         
-                        # if text_8 is stopping this frame...
-                        if text_8.status == STARTED:
+                        # if post_stim is stopping this frame...
+                        if post_stim.status == STARTED:
                             # is it time to stop? (based on global clock, using actual start)
-                            if tThisFlipGlobal > text_8.tStartRefresh + 1.0-frameTolerance:
+                            if tThisFlipGlobal > post_stim.tStartRefresh + 1.0-frameTolerance:
                                 # keep track of stop time/frame for later
-                                text_8.tStop = t  # not accounting for scr refresh
-                                text_8.frameNStop = frameN  # exact frame index
+                                post_stim.tStop = t  # not accounting for scr refresh
+                                post_stim.frameNStop = frameN  # exact frame index
+                                # add timestamp to datafile
+                                thisExp.timestampOnFlip(win, 'post_stim.stopped')
                                 # update status
-                                text_8.status = FINISHED
-                                text_8.setAutoDraw(False)
+                                post_stim.status = FINISHED
+                                post_stim.setAutoDraw(False)
                         
                         # check for quit (typically the Esc key)
                         if defaultKeyboard.getKeys(keyList=["escape"]):
@@ -1385,6 +1399,7 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
                     ## Update output matrices
                     #all_embeddings[iteration,trial,:] = embedding
                     
+                    current_time = datetime.now().time()
                     # using non-slip timing so subtract the expected duration of this Routine (unless ended on request)
                     if routineForceEnded:
                         routineTimer.reset()
@@ -1408,7 +1423,7 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
                     ## Get SCR amplitudes
                     
                     # Get start and end times of trial
-                    current_time = datetime.now().time()
+                    # See end routine of previous trial for current time
                     dummy_datetime = datetime.combine(datetime.today(), current_time)
                     # Get relevant times
                     end_time = dummy_datetime.time()
@@ -1416,30 +1431,36 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
                     peak_start_time = (dummy_datetime - timedelta(seconds=4)).time()
                     peak_end_time = (dummy_datetime - timedelta(seconds=1)).time()
                     
+                    trial_timing = [iteration, trial, 
+                        start_time.isoformat(timespec='milliseconds'), 
+                        end_time.isoformat(timespec='milliseconds')]
+                        
+                    trial_timings.loc[len(trial_timings.index)] = trial_timing
+                    
                     ## Load EDA data
-                    eda_data = pd.read_csv("eda_data.txt", names=["eda", "time"])
-                    samp_data = pd.read_csv("samp_data.txt", names=["samp", "time"])
-                    hr_data = pd.read_csv("hr_data.txt", names=["hr", "time"])
-                    temp_data = pd.read_csv("temp_data.txt", names=["temp", "time"])
+                    eda_data = pd.read_csv("stream/eda_data.txt", names=["eda", "time"])
+                    samp_data = pd.read_csv("stream/samp_data.txt", names=["samp", "time"])
+                    #hr_data = pd.read_csv("hr_data.txt", names=["hr", "time"])
+                    #temp_data = pd.read_csv("temp_data.txt", names=["temp", "time"])
                     
                     # Convert the 'time' column to datetime format
                     eda_data['time'] = pd.to_datetime(eda_data['time'], format='%H:%M:%S.%f').dt.time
                     samp_data['time'] = pd.to_datetime(samp_data['time'], format='%H:%M:%S.%f').dt.time
-                    hr_data['time'] = pd.to_datetime(hr_data['time'], format='%H:%M:%S.%f').dt.time
-                    temp_data['time'] = pd.to_datetime(temp_data['time'], format='%H:%M:%S.%f').dt.time
+                    #hr_data['time'] = pd.to_datetime(hr_data['time'], format='%H:%M:%S.%f').dt.time
+                    #temp_data['time'] = pd.to_datetime(temp_data['time'], format='%H:%M:%S.%f').dt.time
                     
                     # Filter the DataFrame based on the time range
-                    peak_data = eda_data[(eda_data['time'] >= peak_start_time) & (eda_data['time'] <= peak_end_time)]
+                    #peak_data = eda_data[(eda_data['time'] >= peak_start_time) & (eda_data['time'] <= peak_end_time)]
                     all_data = eda_data[(eda_data['time'] >= start_time) & (eda_data['time'] <= end_time)]
                     peak_samp = samp_data[(samp_data['time'] >= peak_start_time) & (samp_data['time'] <= peak_end_time)]
                     
-                    hr_data = hr_data[(hr_data['time'] >= start_time) & (hr_data['time'] <= end_time)]
-                    temp_data = temp_data[(temp_data['time'] >= start_time) & (temp_data['time'] <= end_time)]
+                    #hr_data = hr_data[(hr_data['time'] >= start_time) & (hr_data['time'] <= end_time)]
+                    #temp_data = temp_data[(temp_data['time'] >= start_time) & (temp_data['time'] <= end_time)]
                     
                     # Get average baseline SCR
-                    scr_mean = all_data['eda'].mean()
-                    hr_mean = hr_data['hr'].mean()
-                    temp_mean = temp_data['temp'].mean()
+                    #scr_mean = all_data['eda'].mean()
+                    #hr_mean = hr_data['hr'].mean()
+                    #temp_mean = temp_data['temp'].mean()
                     
                     
                     
@@ -1624,11 +1645,10 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
                     # Run 'End Routine' code from code_2
                     all_ratings[iteration,trial] = slider.getRating()
                     all_scr[iteration,trial] = scr_score
-                    all_scr_means[iteration,trial] = scr_mean
                     scr_data[iteration, trial, :] = scr_resampled
-                    all_hr_means[iteration, trial] = hr_mean
-                    all_temp_means[iteration, trial] = temp_mean
-                    
+                    #all_scr_means[iteration,trial] = scr_mean
+                    #all_hr_means[iteration, trial] = hr_mean
+                    #all_temp_means[iteration, trial] = temp_mean
                     trials.addData('button.numClicks', button.numClicks)
                     if button.numClicks:
                        trials.addData('button.timesOn', button.timesOn)
@@ -1862,10 +1882,18 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
             np.savetxt(f'{root}/embeddings.txt', all_embeddings.reshape((max_iters*pop_size, vec_size)), delimiter=',')
             np.savetxt(f'{root}/ratings.txt', all_ratings, delimiter=',')
             np.savetxt(f'{root}/scr_scores.txt', all_scr, delimiter=',')
-            np.savetxt(f'{root}/scr_means.txt', all_scr_means, delimiter=',')
-            np.savetxt(f'{root}/scr_data.txt', scr_data.reshape((max_iters*pop_size, eda_samples)), delimiter=',')
-            np.savetxt(f'{root}/hr_means.txt', all_hr_means, delimiter=',')
-            np.savetxt(f'{root}/temp_means.txt', all_temp_means, delimiter=',')
+            np.savetxt(f'{root}/scr_data_downsampled.txt', scr_data.reshape((max_iters*pop_size, eda_samples)), delimiter=',')
+            trial_timings.to_csv(f'{root}/trial_timings.txt', index=False)
+            
+            shutil.copy('stream/eda_data.txt', f'{root}')
+            shutil.copy('stream/samp_data.txt', f'{root}')
+            shutil.copy('stream/hr_data.txt', f'{root}')
+            shutil.copy('stream/temp_data.txt', f'{root}')
+            
+            
+            #np.savetxt(f'{root}/scr_means.txt', all_scr_means, delimiter=',')
+            #np.savetxt(f'{root}/hr_means.txt', all_hr_means, delimiter=',')
+            #np.savetxt(f'{root}/temp_means.txt', all_temp_means, delimiter=',')
             
             # Save failed trials
             with open(f"{root}/failed_trials.txt", 'w') as f:
@@ -1879,9 +1907,9 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
                 os.makedirs(dest_path)
             shutil.copytree('images', dest_path, dirs_exist_ok=True) 
             
-            # Clear EDA file
-            with open("eda_data.txt", 'w') as file:
-                pass
+            ## Clear EDA file
+            #with open("eda_data.txt", 'w') as file:
+            #    pass
             # using non-slip timing so subtract the expected duration of this Routine (unless ended on request)
             if routineForceEnded:
                 routineTimer.reset()
