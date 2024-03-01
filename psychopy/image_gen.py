@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2023.2.3),
-    on February 27, 2024, at 13:28
+    on March 01, 2024, at 10:20
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -46,6 +46,7 @@ import pandas as pd
 import subprocess
 import atexit
 import signal
+import math
 
 ## Classes
 class Image(visual.ImageStim):
@@ -454,7 +455,7 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
     global embedding_size
     embedding_size = 768
     global eda_samples
-    eda_samples = 25
+    eda_samples = 15
     
     # Load PCA and covariance matrix
     global pca
@@ -506,7 +507,7 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
     
     # --- Initialize components for Routine "rating" ---
     slider = visual.Slider(win=win, name='slider',
-        startValue=None, size=(1.0, 0.1), pos=(0, 0), units=win.units,
+        startValue=0, size=(1.0, 0.1), pos=(0, 0), units=win.units,
         labels=("0","","","","","5","","","","","10"), ticks=(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), granularity=0.0,
         style='slider', styleTweaks=(), opacity=None,
         labelColor='LightGray', markerColor='DarkGray', lineColor='Black', colorSpace='rgb',
@@ -1602,9 +1603,11 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
                                     # if click is continuing from last frame, update time of clicked until
                                     button.timesOff[-1] = button.buttonClock.getTime()
                                 if not button.wasClicked:
+                                    # end routine when button is clicked
+                                    continueRoutine = False
+                                if not button.wasClicked:
                                     # run callback code when button is clicked
-                                    if slider.getRating():
-                                        continueRoutine = False
+                                    pass
                         # take note of whether button was clicked, so that next frame we know if clicks are new
                         button.wasClicked = button.isClicked and button.status == STARTED
                         
@@ -1643,7 +1646,12 @@ def run(expInfo, thisExp, win, inputs, globalClock=None, thisSession=None):
                     trials.addData('mouse.rightButton', mouse.rightButton)
                     trials.addData('mouse.time', mouse.time)
                     # Run 'End Routine' code from code_2
-                    all_ratings[iteration,trial] = slider.getRating()
+                    if slider.getRating() is None:
+                        all_ratings[iteration,trial] = 0 
+                    else:
+                        all_ratings[iteration,trial] = slider.getRating()    
+                    
+                    
                     all_scr[iteration,trial] = scr_score
                     scr_data[iteration, trial, :] = scr_resampled
                     #all_scr_means[iteration,trial] = scr_mean
