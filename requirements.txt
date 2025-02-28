@@ -1,0 +1,8 @@
+numpy
+pandas
+diffusers
+transformers
+accelerate
+scikit-learn
+pandas
+python-osc

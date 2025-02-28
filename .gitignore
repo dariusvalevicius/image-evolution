@@ -1,6 +1,11 @@
 *images/
 psychopy/data/
+psychopy/psychopy_output/
+psychopy/*lastrun*
+data/
 figures/
 generation/
 sim/
+old_version/
+archive/
 *pycache*

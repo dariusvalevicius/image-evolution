@@ -1,1 +1,2 @@
-# image-evolution
+# Synenthic Image Evolution
+

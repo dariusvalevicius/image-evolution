@@ -1,8 +1,0 @@
-torch
-numpy
-diffusers
-scikit-learn
-pandas
-python-osc
-seaborn
-statsmodels

@@ -1,0 +1,13 @@
+{
+    "max_iters": 4,
+    "pop_size": 4,
+    "mutation_size": 0.3,
+    "latent_size": 80,
+    "embedding_size": 768,
+    "diffusion_steps": 5,
+    "pca_path": "models/pca.pkl",
+    "output_path": "data",
+    "two_computers": 0,
+    "unclip_model_path": "C:/Users/dariu/Documents/PhD/ImageGeneration/pretrained_models/stable-diffusion-2-1-unclip-small",
+    "instruction_text": "Welcome to the experiment.\nAfter each image, please make a rating on the sliding scale.\nPress the spacebar to begin."
+}
