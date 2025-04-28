@@ -1,10 +1,39 @@
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
+import os
 
 
+def get_scr_scores(root_dir, start_time_dt, onset_times_dt):
+    '''
+    Function to get SCR scores based on onset times.
 
-def get_fitness_scores(onset_times, start_time, ratings=None):
+    Assumes SCR data is being streamed to {root_dir}/scr_streaming_data.txt,
+    with a value column and a timestampe column (formatted %H:%M:%S.%f).
+
+    Returns sum of SCR amplitudes within a time window of [onset, onset + 4s]
+    '''
+
+    df = pd.read_csv(os.path.join(root_dir, "scr_streaming_data.txt"), names=["scr", "time"], delimiter="\t")
+    df['time'] = pd.to_datetime(df['time'], format='%H:%M:%S.%f')
+    print(df.head())
+
+    scr_scores = np.zeros(onset_times_dt.shape[0])
+
+    for i, onset in enumerate(onset_times_dt):
+
+        trial_start = start_time_dt + onset
+        trial_end = trial_start + timedelta(seconds=5)
+
+        peak_samp = df[(df['time'] >= trial_start) & (df['time'] <= trial_end)]
+
+        if not peak_samp['scr'].empty:
+            scr_scores[i] = peak_samp['scr'].sum()
+
+    return scr_scores
+
+
+def get_fitness_scores(root_dir, onset_times, start_time, ratings=None, condition=None):
     '''
         This is a modular function that is called at the end of every generation.
 
@@ -17,17 +46,21 @@ def get_fitness_scores(onset_times, start_time, ratings=None):
     '''
 
     fitness = np.zeros(onset_times.shape[0])
-    start_time_dt = datetime.strptime(start_time, "%m_%d_%Y_%H_%M_%S_%f")
+    start_time_dt = datetime.strptime(start_time, '%H:%M:%S.%f')
+    onset_times_dt = pd.to_timedelta(onset_times, unit='s')
+    pop_size = onset_times.shape[0]
 
     ######################################################################################################
     # YOUR CODE HERE #
     ######################################################################################################
-    ## In this example, the fitness function is simply the subjective ratings submitted by the participant.
-    fitness = ratings
 
 
-
-
+    if condition == "ratings":
+        fitness = ratings
+    elif condition == "scr":
+        fitness = get_scr_scores(root_dir, start_time_dt, onset_times_dt)
+    elif condition == "control":
+        fitness = np.random.randn(pop_size)
 
 
     ######################################################################################################
@@ -35,3 +68,12 @@ def get_fitness_scores(onset_times, start_time, ratings=None):
     ######################################################################################################
 
     return fitness
+
+
+if __name__ == "__main__":
+
+    with open("run_start_time.txt", 'r') as f:
+        start_time = f.read()
+
+    for i in range(10):
+        print(get_fitness_scores(".", np.loadtxt(f"generation_{i:02}/onset_times.txt"), start_time))

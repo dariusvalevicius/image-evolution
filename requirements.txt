@@ -4,5 +4,8 @@ diffusers
 transformers
 accelerate
 scikit-learn
-pandas
+scipy
 python-osc
+psychopy
+torch
+torchvision

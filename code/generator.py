@@ -1,39 +1,29 @@
 import torch
 import numpy as np
-import pandas as pd
 
 from diffusers import StableUnCLIPImg2ImgPipeline
-import sys
 import os
 import time
 from PIL import Image
 
-import re
-
 import pickle
 import json
-
-from datetime import datetime, timedelta
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
+import argparse
 
 import fitness_function
-
 
 
 def generate_image(pipe, embedding, image_name, diffusion_steps=21):
     '''
     Generate an image in Stable UnCLIP using a latent embedding.
-        Inputs:
-            pipe: StableUnCLIPImg2ImgPipeline object
-            embedding: 1024-d numpy array
-            image_name: output filename
-            diffusion_steps: Number of diffusion steps for image generation. Can tweak this based on compute power.
-        Outputs:
-            Saved image.
+
+    Inputs:
+        pipe: StableUnCLIPImg2ImgPipeline object
+        embedding: n-dimensional numpy array
+        image_name: output filename
+        diffusion_steps: Number of diffusion steps for image generation. Can tweak this based on compute power.
+    Outputs:
+        Saved image.
     '''
 
     embedding = torch.tensor(np.reshape(
@@ -48,6 +38,11 @@ def generate_image(pipe, embedding, image_name, diffusion_steps=21):
 def prep_model(model_path):
     '''
     Helper function to load Stable UnCLIP model into memory.
+
+    Input
+        model_path: Path to Stable unCLIP model
+    Output
+        pipe: Stable unCLIP pipeline object
     '''
     pipe = StableUnCLIPImg2ImgPipeline.from_pretrained(
         model_path, torch_dtype=torch.float16).to('cuda')
@@ -57,10 +52,17 @@ def prep_model(model_path):
 def get_embed(path, vision_model, processor):
     '''
     Gets the CLIP embeddings from an image file.
+
+    Inputs
+        path: Path to image file
+        vision_model: Pipe object for encoding image
+        processor: Object for preprocessing image
+    Output
+        image_embeddings: n-dimensional image encoding
     '''
     
     image = Image.open(path)
-    inputs = processor(text=None, images=image, return_tensors="pt")
+    inputs = processor(images=image, return_tensors="pt")
 
     pixel_values = inputs['pixel_values'].to('cuda')
 
@@ -73,8 +75,23 @@ def get_embed(path, vision_model, processor):
 
 
 def create_new_latents(fitness, latents, mutation_size):
-    '''This function takes the fitness scores and embeddings of the previous
-    generation in order to produce a new set of embeddings'''
+    '''
+    This function takes the fitness scores and embeddings of the previous
+    generation in order to produce a new set of embeddings.
+
+    Algorithm:
+        The fitness values are sorted and the top half is selected.
+        The median (of the original fitness vector) is subtracted.
+        Finally, the values are normalized (sum to one) to produce recombination weights for the top 1/2 images.
+        New latents are samples around the weighted mean.
+
+    Inputs
+        fitness: Fitness values computed by fitness function
+        latents: The latent embeddings of the images
+        mutation_size: The sigma value to use when resampling new latents
+    Output
+        next_latents: Latent vectors for the next generation
+    '''
 
     top_n = int(fitness.shape[0]/2)
     
@@ -105,21 +122,39 @@ def create_new_latents(fitness, latents, mutation_size):
 if __name__ == "__main__":
 
     '''
+    This script is meant to be run as an asynchronous subprocess companion to the psychopy script.
+    If run on one computer, set relevant param in config.json and the psychopy script will automatically start it.
+    If run on two computers, start manager.py on analysis computer and the psychopy program on the stimulus presentation computer.
 
+    This script does several things (in this order):
+    - Computes initial random latents
+    - Generates images from latents
+    - Re-encodes images (set "use_post_encodings" to 1 to use these during the real-time evolution)
+    - Waits for the onset times to be written from the psychopy program
+    - Calls fitness function to compute image fitness
+    - Recombines latent embeddings for next generation
+
+    Inputs
+        root_dir: The path to this run's data folder
+        condition: The experiment condition, dictates which fitness function to use
     '''
 
     print("GENERATOR is starting...")
 
-    # Set start time
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", help="Root directory of output (run level)")
+    parser.add_argument("--condition", help="Experiment current condition/target")
+    args = parser.parse_args()
 
+    root_dir = args.output
+    condition = args.condition
 
-    # Get arguments
-    root_dir = sys.argv[1]
 
     with open('../config.json') as f:
         config = json.load(f)
 
     diffusion_steps = config["diffusion_steps"]
+    use_post_encodings = config=["use_post_encodings"]
 
     pop_size = config["pop_size"]
     max_iters = config["max_iters"]
@@ -149,6 +184,9 @@ if __name__ == "__main__":
     ## Start loop
     for iter in range(max_iters):
 
+        print(f"GENERATOR: Processing generaton {iter}.")
+
+
         # Create folder for this generation
         gen_folder = os.path.join(root_dir, f"generation_{iter:02}")
         if not os.path.exists(gen_folder):
@@ -160,9 +198,6 @@ if __name__ == "__main__":
         else:
             latents = all_latents[iter - 1, :, :]
             this_trial_latents = create_new_latents(fitness, latents, mutation_size)
-
-        # Concatenate new generation embeddings
-        all_latents[iter, :, :] = this_trial_latents
 
         # Generate batch of image embeddings
         embeddings = pca.inverse_transform(this_trial_latents)
@@ -182,6 +217,7 @@ if __name__ == "__main__":
             # Read back embeddings
             this_embedding_post = get_embed(filename, vision_model, processor)
             embeddings_post[i,:] = this_embedding_post
+
 
             # Set status to complete
             finished[i] = 1
@@ -215,8 +251,18 @@ if __name__ == "__main__":
             start_time = f.read()
 
         ## Compute new fitness values
-        fitness = fitness_function.get_fitness_scores(onset_times, start_time, ratings)
+        fitness = fitness_function.get_fitness_scores(root_dir, onset_times, start_time, ratings, condition)
 
+        # Save fitness values
+        fitness_path = os.path.join(gen_folder, "fitness.txt")
+        np.savetxt(fitness_path, fitness, delimiter=',')
+
+
+        # Concatenate new generation embeddings
+        if use_post_encodings:
+            all_latents[iter, :, :] = pca.transform(embeddings_post)
+        else:
+            all_latents[iter, :, :] = this_trial_latents
 
         print(f"GENERATOR: Generation {iter} processing complete. Moving on...")
 
